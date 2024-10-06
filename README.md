@@ -1,2 +1,2 @@
-# COEN390
-390 project TBD
+# Slouch Patrol
+Solving slouching for now
