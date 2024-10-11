@@ -7,13 +7,131 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:fitsSystemWindows="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/primary_color" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <TextView
+        android:id="@+id/textViewConnection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-60dp"
+        android:text="NOT CONNECTED"
+        android:textAlignment="center"
+        android:textColorLink="@color/primary_dark"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+
+    <TextView
+        android:id="@+id/textViewHome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="HOME"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textColorLink="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/textViewConnection"
+        tools:layout_editor_absoluteX="139dp" />
+
+    <Button
+        android:id="@+id/buttonSettings"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/primary_color"
+        android:text="Settings"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/appBarLayout"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+
+    <Button
+        android:id="@+id/buttonData"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="30dp"
+        android:backgroundTint="@color/primary_color"
+        android:text="Data"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/appBarLayout"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        app:layout_constraintTop_toBottomOf="@+id/textViewHome"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <View
+            android:id="@+id/circle_background_outer"
+            android:layout_width="225dp"
+            android:layout_height="225dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="@color/primary_color" />
+
+        <View
+            android:id="@+id/circle_background_inner"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="@color/background_color" />
+
+        <TextView
+            android:id="@+id/textViewScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="100"
+            android:textColor="@color/primary_color"
+            android:textSize="96sp" />
+
+        <TextView
+            android:id="@+id/message_text"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/circle_background_outer"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="11dp"
+            android:text="Your posture is good, keep it up!"
+            android:textAlignment="center"
+            android:textColor="@color/primary_color"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textViewScore"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="-20dp"
+            android:textSize="30sp"
+            android:text="/100"
+            android:textColor="@color/primary_color" />
+    </RelativeLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
