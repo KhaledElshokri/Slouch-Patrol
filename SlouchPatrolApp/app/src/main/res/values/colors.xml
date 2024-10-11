@@ -2,4 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="primary_color">#a19eff</color>  <!-- Purple -->
+    <color name="primary_dark">#5452c0</color>    <!-- Dark Purple -->
+    <color name="background_color">#fef7ff</color> <!-- White/Purple -->
+    <color name="text_color">#000000</color>
 </resources>
