@@ -150,9 +150,11 @@ public class MainActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 String sensorData = dataFetcher.getSensorData(); // Fetch data in the background
+                int index = sensorData.indexOf('.');
+                String displayValue = (index !=- 1) ? sensorData.substring(0, index) : sensorData ;
                 runOnUiThread(() -> {
                     TextView sensorInput = findViewById(R.id.textViewScore);
-                    sensorInput.setText(sensorData); // Update UI with the fetched data
+                    sensorInput.setText(displayValue); // Update UI with the fetched data
                 });
             } catch (IOException e) {
                 e.printStackTrace(); // Log the error
