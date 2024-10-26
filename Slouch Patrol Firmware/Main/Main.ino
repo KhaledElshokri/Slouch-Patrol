@@ -1,8 +1,8 @@
 // main.ino
-//#include <MPU6050.h>
-#include <I2Cdev.h>
+#include <WiFi.h>
+#include <WebServer.h>
+//#include <I2Cdev.h>
 #include <MPU6050_6Axis_MotionApps20.h>
-//#include <SoftwareWire.h>
 #include <ESP32_SoftWire.h>
 #include <Wire.h>
 #include "StarCommands.h"
@@ -14,9 +14,41 @@
 #include <Arduino.h>
 
 
+const char* ssid = "SSID";
+const char* password = "WIFIPASSWORD";
+
+WebServer server(80); // Create a web server object that listens on port 80
+
+static String AppData = "Calibrating...";
+
+// Function to handle the root URL ("/")
+void handleRoot() {
+    server.send(200, "text/plain", AppData); // Send the sensor data
+}
+
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   esp_log_level_set("*", ESP_LOG_NONE);  // This silences all logs
+
+  //
+  // START WIFI SERVER
+  //
+  WiFi.begin(ssid, password);  // Connect to Wi-Fi
+  while (WiFi.status() != WL_CONNECTED) {
+      delay(1000);
+      Serial.println("Connecting to WiFi...");
+  }
+  Serial.println("WiFi connected");
+
+  Serial.print("ESP32 IP address: ");
+  Serial.println(WiFi.localIP());  // Print the IP address
+
+  server.on("/", handleRoot);  // Associate the root URL with the handler
+  server.begin();  // Start the server
+  
+  //
+  // END WIFI SETUP
+  //
 
   // Initialize command map
   setupStarCommandMap();
@@ -132,6 +164,7 @@ void setup() {
 
 
 void loop() {
+
   unsigned long startTime = millis();
     
   if (Serial.available() > 0) {
@@ -164,11 +197,15 @@ void loop() {
           sensor.yaw = ypr[0] * RAD_TO_DEG;
           sensor.pitch = ypr[1] * RAD_TO_DEG;
           sensor.roll = ypr[2] * RAD_TO_DEG;
+
+          AppData = String(sensor.pitch); // We send this to the app
         }
       }    
     }
     
   }
+  
+  server.handleClient();  // Handle client requests
   
   // Calculate time spent during this loop iteration
   unsigned long endTime = millis();
@@ -179,3 +216,4 @@ void loop() {
   }
   
 }
+
