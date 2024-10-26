@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
     private SensorDataFetcher dataFetcher = new SensorDataFetcher();
     private final Handler handler = new Handler();
-    private static final int FETCH_INTERVAL_MS = 2000; // Fetch data every 5 seconds
+    private static final int FETCH_INTERVAL_MS = 100; // Fetch data every 0.1 seconds
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -8,7 +8,7 @@ import okhttp3.Response;
 
 public class SensorDataFetcher {
 
-    private static final String ESP32_URL = "http://10.0.0.196/";
+    private static final String ESP32_URL = "http://10.0.0.66/";
 
     OkHttpClient client = new OkHttpClient();
 
