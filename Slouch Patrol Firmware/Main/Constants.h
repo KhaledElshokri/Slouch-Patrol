@@ -12,12 +12,13 @@
 
 // Global variables
 extern const int8_t numSensor;                  // Number of sensors
-extern char G_or_MS2;    
-extern const float G_TO_MS2;     
-extern int ACCEL_FS_RANGE, GYRO_FS_RANGE;   
-extern float accelConversionFactor, gyroConversionFactor;
 extern boolean debug;
-extern const unsigned long intervalTime;
+extern char G_or_MS2;    
+    
+extern int ACCEL_FS_RANGE, GYRO_FS_RANGE;   
+extern const float G_TO_MS2; 
+extern unsigned long intervalTime;
+extern float accelConversionFactor, gyroConversionFactor;
 
 String removeFirstSection(String command);   
 void setConversionFactors(int accelFSRange, int gyroFSRange);

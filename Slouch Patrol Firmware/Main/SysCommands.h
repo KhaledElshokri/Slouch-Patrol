@@ -12,6 +12,9 @@ std::vector<String> handleSysCommands(String command);
 std::vector<String> Get_Memory(String arg);
 std::vector<String> Get_Calibration(String arg);
 std::vector<String> Set_Calibration(String arg);
+std::vector<String> Get_Variable(String arg);
+std::vector<String> Set_Variable(String arg);
+
 
 //void Deep_Calibration(int ID);
 
