@@ -23,29 +23,41 @@ static String AppData = "Calibrating...";
 
 // Function to handle the root URL ("/")
 void handleRoot() {
-    server.send(200, "text/plain", AppData); // Send the sensor data
+    server.send(200, "text/plain", AppData);    // Send the sensor data
 }
 
 void setup() {
+  std::vector<String> result;
   Serial.begin(115200);
-  esp_log_level_set("*", ESP_LOG_NONE);  // This silences all logs
+  esp_log_level_set("*", ESP_LOG_NONE);         // This silences all logs
 
   //
-  // START WIFI SERVER
+  // START WIFI SERVER WITH LIMITED RETRIES
   //
-  WiFi.begin(ssid, password);  // Connect to Wi-Fi
-  while (WiFi.status() != WL_CONNECTED) {
+  WiFi.begin(ssid, password);                   // Connect to Wi-Fi
+  int attempts = 0;
+  const int maxAttempts = 5;
+
+  while (WiFi.status() != WL_CONNECTED && attempts < maxAttempts) {
       delay(1000);
-      Serial.println("Connecting to WiFi...");
+      Serial.print("Attempting to connect to WiFi (");
+      Serial.print(attempts + 1);
+      Serial.println(" of 5)");
+      attempts++;
   }
-  Serial.println("WiFi connected");
 
-  Serial.print("ESP32 IP address: ");
-  Serial.println(WiFi.localIP());  // Print the IP address
+  if (WiFi.status() == WL_CONNECTED) {
+      Serial.println("WiFi connected");
+      Serial.print("ESP32 IP address: ");
+      Serial.println(WiFi.localIP());           // Print the IP address
 
-  server.on("/", handleRoot);  // Associate the root URL with the handler
-  server.begin();  // Start the server
-  
+      server.on("/", handleRoot);               // Associate root URL with handler
+      server.begin();                           // Start the server
+      Serial.println("Web server started");
+  } else {
+      Serial.println("WiFi connection failed after 5 attempts. Using Serial for communication.");
+  }
+
   //
   // END WIFI SETUP
   //
@@ -82,16 +94,16 @@ void setup() {
     if (debug) {
       uint8_t devStatus = sensor.accelGyro.dmpInitialize();   // DMP Initialization
   
-      if (devStatus == 0) {  // devStatus 0 means DMP initialization successful
+      if (devStatus == 0) {                                   // devStatus 0 means DMP initialization successful
           Serial.print("DMP for sensor ");
           Serial.print(i);
           Serial.println(" initialized successfully.");
-          sensor.accelGyro.setDMPEnabled(true);  // Enable DMP if initialized correctly
+          sensor.accelGyro.setDMPEnabled(true);               // Enable DMP if initialized correctly
       } else {
           Serial.print("DMP Initialization failed for sensor ");
           Serial.print(i);
           Serial.print(" with status code: ");
-          Serial.println(devStatus);  // Non-zero status means initialization failed
+          Serial.println(devStatus);                          // Non-zero status means initialization failed
       }
   
       // Check if the sensor is properly connected
@@ -113,58 +125,17 @@ void setup() {
     }
     
     sensor.accelGyro.setClockSource(MPU6050_CLOCK_PLL_XGYRO);                 // Set clock source to X-axis gyroscope for stability   
-    sensor.accelGyro.setSleepEnabled(false);                                  // Disable sleep mode
-
-    // Set accelerometer range dynamically based on ACCEL_FS_RANGE from Constants.h
-    switch (ACCEL_FS_RANGE) {
-      case 2:
-        sensor.accelGyro.setFullScaleAccelRange(MPU6050_ACCEL_FS_2);  // ±2g
-        break;
-      case 4:
-        sensor.accelGyro.setFullScaleAccelRange(MPU6050_ACCEL_FS_4);  // ±4g
-        break;
-      case 8:
-        sensor.accelGyro.setFullScaleAccelRange(MPU6050_ACCEL_FS_8);  // ±8g
-        break;
-      case 16:
-        sensor.accelGyro.setFullScaleAccelRange(MPU6050_ACCEL_FS_16); // ±16g
-        break;
-      default:
-        Serial.println(F("ERROR: Invalid accelerometer range"));
-        break;
-    }
-
-    // Set gyroscope range dynamically based on GYRO_FS_RANGE from Constants.h
-    switch (GYRO_FS_RANGE) {
-      case 250:
-        sensor.accelGyro.setFullScaleGyroRange(MPU6050_GYRO_FS_250);  // ±250°/s
-        break;
-      case 500:
-        sensor.accelGyro.setFullScaleGyroRange(MPU6050_GYRO_FS_500);  // ±500°/s
-        break;
-      case 1000:
-        sensor.accelGyro.setFullScaleGyroRange(MPU6050_GYRO_FS_1000); // ±1000°/s
-        break;
-      case 2000:
-        sensor.accelGyro.setFullScaleGyroRange(MPU6050_GYRO_FS_2000); // ±2000°/s
-        break;
-      default:
-        Serial.println(F("ERROR: Invalid gyroscope range"));
-        break;
-    }
-
-    // Delay to avoid overwhelming the I2C bus during initialization
-    delay(100);
+    sensor.accelGyro.setSleepEnabled(false);                                  // Disable sleep mode      
+    
+    delay(100);                                                               // Delay to avoid overwhelming the I2C bus during initialization
+    result = Set_Calibration("QX");                                           // Perform simple calibration on startup
   }
-  if (debug){
-    Serial.println(F("\nConfig completed for all sensors"));                  // For troubleshooting
-  }
+  
+  if (debug){  Serial.println(F("\nConfig completed for all sensors"));  }    // For troubleshooting
 }
 
 
-
 void loop() {
-
   unsigned long startTime = millis();
     
   if (Serial.available() > 0) {
@@ -198,22 +169,19 @@ void loop() {
           sensor.pitch = ypr[1] * RAD_TO_DEG;
           sensor.roll = ypr[2] * RAD_TO_DEG;
 
-          AppData = String(sensor.pitch); // We send this to the app
+          AppData = String(sensor.pitch);                                     // We send this to the app
         }
       }    
-    }
-    
+    }    
   }
   
-  server.handleClient();  // Handle client requests
+  server.handleClient();                                                      // Handle client requests
   
   // Calculate time spent during this loop iteration
   unsigned long endTime = millis();
   unsigned long elapsedTime = endTime - startTime;
   if (elapsedTime < intervalTime) {
       unsigned long remainingTime = intervalTime - elapsedTime;
-      delay(remainingTime);                         // Pause for the remaining time to match the intervalTime
-  }
-  
+      delay(remainingTime);                                                   // Pause for the remaining time to match the intervalTime
+  }  
 }
-

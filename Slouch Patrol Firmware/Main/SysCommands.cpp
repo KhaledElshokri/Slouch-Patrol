@@ -2,9 +2,9 @@
 //#include <ArxContainer.h>
 #include <map>
 #include <vector>
+#include <variant>
 #include <Arduino.h>
 #include "Constants.h"
-
 
 #include "SysCommands.h"
 // #include <EEPROM.h>
@@ -20,9 +20,15 @@ void setupSysCommandMap() {
   sysCommandMap["MEM?"] = Get_Memory;
   sysCommandMap["CAL?"] = Get_Calibration;
   sysCommandMap["CAL"] = Set_Calibration;
+  sysCommandMap["VAR?"] = Get_Variable;
+  sysCommandMap["VAR"] = Set_Variable;
 
 }
 
+std::map<String, std::variant<int*, bool*, String*>> variableMap = {
+      {"DEBUG", &debug},
+      
+};
 
 std::vector<String> handleSysCommands(String command) {
   String baseCommand;
@@ -159,7 +165,7 @@ std::vector<String> Set_Calibration(String arg) {
       break;
   }
 
-  // Begin calibration of no errors
+  // Begin calibration if no errors
   if (result[0].isEmpty()){
     for (int i = loop_start; i < loop_stop; ++i) {
       if (debug) {
@@ -203,7 +209,7 @@ std::vector<String> Set_Calibration(String arg) {
         }
       }       
     } 
-  }
+  }  // Set calibration data
 
   // Wake up all sensors post calibration
   for (int i = 0; i < numSensor; ++i) {
@@ -216,6 +222,71 @@ std::vector<String> Set_Calibration(String arg) {
   }
   
   return result; 
+}
+
+
+// Function to check if a variable name exists and retrieve its value
+std::vector<String> Get_Variable(String arg) {
+  String varName = arg;
+  std::vector<String> result; result.push_back("");                         // First position reserved for error; empty means no error
+
+  // Check if the variable exists in the map
+  auto it = variableMap.find(varName);
+  if (it != variableMap.end()) {        
+    std::visit([&](auto* ptr) {
+      result.push_back(String(*ptr));                                 // Directly convert to String
+    }, it->second);
+    
+    // Special case for bool: convert to "true" or "false"
+    if (std::holds_alternative<bool*>(it->second)) {
+      result.back() = (*std::get<bool*>(it->second)) ? "true" : "false";
+    }    
+  } else { result[0] = "Variable not found.";  }                            // Error message if variable doesn't exist
+
+  return result;
+}
+
+
+// Function to set a variable to a new value
+std::vector<String> Set_Variable(String arg) {
+  String varName, value;
+  std::vector<String> result; result.push_back("");                 // First position is reserved for error, empty means no error
+
+  // Check for arguments by finding a space in the input string
+  int spaceIndex = arg.indexOf(' ');
+  if (spaceIndex > 1) {
+    varName = arg.substring(0, spaceIndex);                         // Variable name
+    value = arg.substring(spaceIndex + 1);                          // Value to set
+  } else { result[0] = "No value sent for the variable.";  }  
+
+  // Check if the variable exists in the map
+  if (result[0].isEmpty()){    
+    auto it = variableMap.find(varName);                                  // Check if the variable exists in the map
+    if (it != variableMap.end()) {        
+      std::visit([&](auto* ptr) {                                         // Use std::visit with a lambda to set the value based on type
+        using T = std::decay_t<decltype(*ptr)>;
+        if constexpr (std::is_same_v<T, bool>) {                          // Handle bool conversion                
+            if (value.equalsIgnoreCase("true") || value == "1") { *ptr = true;
+            } else if (value.equalsIgnoreCase("false") || value == "0") { *ptr = false;
+            } else {  result[0] = "Invalid value for boolean, expected 'true(1)' or 'false(0)'.";  }
+        } else if constexpr (std::is_same_v<T, int>) {                    // Handle int conversion with validation                
+            bool isNumeric = true;
+            for (char c : value) {
+              if (!isdigit(c) && c != '-') {
+                isNumeric = false;
+                break;
+              }
+            }
+            if (isNumeric) {  *ptr = value.toInt();  }
+            else {  result[0] = "Invalid value for integer, expected a numeric value.";  }
+        } else if constexpr (std::is_same_v<T, String>) {                 // Assign value directly as String                
+            *ptr = value;
+        }
+      }, it->second);
+    } else { result[0] = "Variable not found.";  }                        // Error message if variable doesn't exist
+  }
+  
+  return result;
 }
 
 

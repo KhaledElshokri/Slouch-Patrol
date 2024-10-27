@@ -9,14 +9,14 @@
 #include <Arduino.h>
 
 // Global  variables
- const int8_t numSensor = 1;             // Number of sensors
-boolean debug = true;                  // Activate debug mode
-
+const int8_t numSensor = 1;             // Number of sensors
+boolean debug = false;                  // Activate debug mode
 char G_or_MS2 = 'G';                    // Global variable for unit selection (g or m/s²), default is 'G'
-const float G_TO_MS2 = 9.80665;         // Global variable for unit acceleration conversion
+
 int ACCEL_FS_RANGE = 2;                 // Define the full-scale range for accelerometer (Options: 2, 4, 8, 16 (g))
 int GYRO_FS_RANGE = 250;                // Define the full-scale range for gyroscope (Options: 250, 500, 1000, 2000 (°/s))
-const unsigned long intervalTime = 10;  // Define the interval between every sweeps for commands and sensor refresh (ms)
+unsigned long intervalTime = 10;        // Define the interval between every sweeps for commands and sensor refresh (ms)
+const float G_TO_MS2 = 9.80665;         // Global variable for unit acceleration conversion
 float accelConversionFactor, gyroConversionFactor;
 
 
