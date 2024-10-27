@@ -113,11 +113,16 @@ std::vector<String> Get_Calibration(String arg) {
 
 // Set calibration data
 std::vector<String> Set_Calibration(String arg) {                  
-  int loop_start = 0, loop_stop = 0, sampleSize = 6;  
+  int loop_start = 0, loop_stop = 0, sampleSize;  
   std::vector<String> result; result.push_back("");       // First position is reserved for error, empty means no error
+  char Type;
+  unsigned long startTime = 0;
 
+  // Start timing the calibration if debugging is active
+  
+  // Put all sensors to sleep
   for (int i = 0; i < numSensor; ++i) {
-    sensors[i].accelGyro.setSleepEnabled(true);           // Put sensor to sleep    
+    sensors[i].accelGyro.setSleepEnabled(true);               
     if (debug) {
       Serial.print("Sensor "); 
       Serial.print(i); 
@@ -125,42 +130,84 @@ std::vector<String> Set_Calibration(String arg) {
     }
   }
 
-  // Determine sensor range based on arg
-  if (arg.equalsIgnoreCase("X")) {
-      loop_stop = numSensor;
-  } else if (isValidInteger(arg)) {
-      int ID = arg.toInt();
-      if (ID >= 0 && ID < numSensor) {
-          loop_start = ID;
-          loop_stop = ID + 1;
-      } else { result[0] = "Invalid sensor ID"; }
-  } else { result[0] = "Invalid argument: must be 'X' or an integer between 0 and " + String(numSensor - 1); }
-  
+  // check for args and split
+  if (arg.length() >= 2) {
+    Type = arg.charAt(0);
+
+    // Determine sensor range based on arg
+    if (arg.substring(1).equalsIgnoreCase("X")) {
+        loop_stop = numSensor;
+    } else if (isValidInteger(arg.substring(1))) {
+        int ID = arg.substring(1).toInt();
+        if (ID >= 0 && ID < numSensor) {
+            loop_start = ID;
+            loop_stop = ID + 1;
+        } else { result[0] = "Invalid sensor ID"; }
+    } else { result[0] = "Invalid argument: must be 'Q' or 'D' followed by 'X' or an integer between 0 and " + String(numSensor - 1); }
+  }
+
+  // Check for type to assign sample qty
+  switch (Type) {
+    case 'Q': 
+      sampleSize = 1;
+      break; 
+    case 'D':
+      sampleSize = 10;
+      break; 
+    default:
+      result[0] = "ERROR: Invalid type";
+      break;
+  }
+
+  // Begin calibration of no errors
   if (result[0].isEmpty()){
     for (int i = loop_start; i < loop_stop; ++i) {
       if (debug) {
-        Serial.print("Calibrating sensor "); 
-        Serial.print(i); 
+        Serial.print("\nCalibrating sensor "); 
+        Serial.print(i);         
+        startTime = millis();
       }
+
       SensorData &sensor = sensors[i];                  // Access the relevant sensor
-      sensors[i].accelGyro.setSleepEnabled(false);      // Wake up sensor to be calibrated
-      
+      sensor.accelGyro.setSleepEnabled(false);          // Wake up sensor to be calibrated
       sensor.accelGyro.setDMPEnabled(false);            // Disable DMP during calibration   
-      sensor.accelGyro.resetFIFO();         
-      sensor.accelGyro.CalibrateAccel(sampleSize);
-      //delay (sampleSize * 100 + 250); 
-      sensor.accelGyro.CalibrateGyro(sampleSize);    
-      //delay (sampleSize * 100 + 250); 
-      sensor.accelGyro.CalibrateAccel(1);
-      sensor.accelGyro.CalibrateGyro(1);
-      sensor.accelGyro.dmpInitialize();                 // Enable DMP post calibration                    
+      sensor.accelGyro.resetFIFO();        
+      
+      sensor.accelGyro.CalibrateAccel(sampleSize);        
+      sensor.accelGyro.CalibrateGyro(sampleSize);             
+          
+      //sensor.accelGyro.resetFIFO();               
       sensor.accelGyro.setDMPEnabled(true);
-      sensors[i].accelGyro.setSleepEnabled(true);       // Put sensor back to sleep      
+      sensors[i].accelGyro.setSleepEnabled(true);       // Put sensor back to sleep 
+      if (debug) {
+        unsigned long endTime = millis();
+        
+        switch (Type) {
+          case 'Q': 
+            Serial.print("\nQuick"); 
+            break; 
+          case 'D':
+            Serial.print("\nDeep");
+            break; 
+        }        
+        Serial.print(" Calibration for sensor");
+        Serial.print(i);
+        Serial.print(" completed in ");
+        Serial.print((endTime - startTime));
+        Serial.println(" ms.");
+
+        std::vector<String> calibrationData = Get_Calibration(String(i));
+        for (const auto& data : calibrationData) {
+          Serial.print(data);
+          Serial.print("  ");
+        }
+      }       
     } 
   }
 
+  // Wake up all sensors post calibration
   for (int i = 0; i < numSensor; ++i) {
-    sensors[i].accelGyro.setSleepEnabled(false);        // wake up all sensor    
+    sensors[i].accelGyro.setSleepEnabled(false);     
     if (debug) {
       Serial.print("Sensor "); 
       Serial.print(i); 
@@ -172,82 +219,134 @@ std::vector<String> Set_Calibration(String arg) {
 }
 
 
-
-
-
-
-/*
-const int usDelay = 3150;  // Delay to maintain ~200Hz sampling
-const int NFast = 1000, NSlow = 10000;
-int LowOffset[6], HighOffset[6], Smoothed[6], Target[6] = {0, 0, 0, 0, 0, 0};
-int N;
-
-// Initialize and smooth sensor data
-void getSmoothedData() {
-    int16_t raw[6];
-    long sums[6] = {0, 0, 0, 0, 0, 0};
-
-    for (int i = 0; i < N; i++) {
-        accelgyro.getMotion6(&raw[iAx], &raw[iAy], &raw[iAz], &raw[iGx], &raw[iGy], &raw[iGz]);
-        for (int j = iAx; j <= iGz; j++) sums[j] += raw[j];
-        delayMicroseconds(usDelay);
-    }
-    for (int i = iAx; i <= iGz; i++) Smoothed[i] = (sums[i] + N / 2) / N;
-}
-
-// Set offsets for accelerometer and gyroscope
-void setOffsets(int offsets[6]) {
-    accelgyro.setXAccelOffset(offsets[iAx]);
-    accelgyro.setYAccelOffset(offsets[iAy]);
-    accelgyro.setZAccelOffset(offsets[iAz]);
-    accelgyro.setXGyroOffset(offsets[iGx]);
-    accelgyro.setYGyroOffset(offsets[iGy]);
-    accelgyro.setZGyroOffset(offsets[iGz]);
-}
-
-// Adjust offsets by expanding and narrowing bracket ranges
-void adjustOffsets() {
-    bool done = false;
-
-    while (!done) {
-        done = true;
-        setOffsets(LowOffset);
-        getSmoothedData();
-        for (int i = iAx; i <= iGz; i++) {
-            if (Smoothed[i] >= Target[i]) {
-                done = false;
-                LowOffset[i] -= 1000;
-            }
-        }
-
-        setOffsets(HighOffset);
-        getSmoothedData();
-        for (int i = iAx; i <= iGz; i++) {
-            if (Smoothed[i] <= Target[i]) {
-                done = false;
-                HighOffset[i] += 1000;
-            }
-        }
-
-        for (int i = iAx; i <= iGz; i++) {
-            LowOffset[i] = (LowOffset[i] + HighOffset[i]) / 2;
-        }
-    }
-}
-
-// Initialize MPU6050 and calibrate with fast averaging
-void setup() {
-    #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
-        Wire.begin();
-    #elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
-        Fastwire::setup(400, true);
-    #endif
-
-    accelgyro.initialize();
-
-    // Targets: Z acceleration should be around 16384 (1g)
-    Target[iAz] = 16384;
-
-    N = NFast;
-    adjustOffsets();  // Perform offset adjustments
-}*/
+// Super duper excessive calibration
+//void Deep_Calibration(int ID) {
+//  const int NFast = 1000, NSlow = 10000, usDelay = 3150;
+//  const int maxIterations = 1000;  // Set a max limit for iterations
+//  const int tolerance = 10;        // Define tolerance for offset convergence
+//  int Smoothed[6], LowOffset[6] = {0, 0, 0, 0, 0, 0}, HighOffset[6] = {0, 0, 0, 0, 0, 0};
+//  int NextLowOffset[6], NextHighOffset[6];
+//  int Target[6] = {0, 0, 16384, 0, 0, 0}; // Target values for accelerometer and gyro
+//  int16_t raw[6];
+//  long sums[6] = {0, 0, 0, 0, 0, 0};
+//  int N;
+//
+//  const int iAx = 0, iAy = 1, iAz = 2, iGx = 3, iGy = 4, iGz = 5;  // Declare indices for axes
+//
+//  bool done = false;
+//  int iterationCount = 0;
+//  
+//  // Local helper function to set offsets
+//  auto SetOffsets = [&]() {
+//    sensors[ID].accelGyro.setXAccelOffset(LowOffset[iAx]);
+//    sensors[ID].accelGyro.setYAccelOffset(LowOffset[iAy]);
+//    sensors[ID].accelGyro.setZAccelOffset(LowOffset[iAz]);
+//    sensors[ID].accelGyro.setXGyroOffset(LowOffset[iGx]);
+//    sensors[ID].accelGyro.setYGyroOffset(LowOffset[iGy]);
+//    sensors[ID].accelGyro.setZGyroOffset(LowOffset[iGz]);
+//  };
+//
+//  // Local helper function to get smoothed values
+//  auto GetSmoothed = [&]() {
+//    for (int j = 0; j < 6; j++) sums[j] = 0; // Reset sums for new calculation
+//    for (int i = 0; i < N; i++) {
+//        sensors[ID].accelGyro.getMotion6(&raw[0], &raw[1], &raw[2], &raw[3], &raw[4], &raw[5]);
+//        for (int j = 0; j < 6; j++) {
+//            sums[j] += raw[j];
+//        }
+//        delayMicroseconds(usDelay);
+//    }
+//    for (int j = 0; j < 6; j++) {
+//        Smoothed[j] = sums[j] / N;
+//    }
+//  };
+//
+//  // Phase 1 (NFast) to get initial smoothed values
+//  N = NFast;
+//  GetSmoothed(); // Call GetSmoothed to initialize smoothed values
+//
+//  // Initialize NextLowOffset and NextHighOffset
+//  for (int i = 0; i < 6; i++) {
+//    if (Smoothed[i] > Target[i]) { 
+//      LowOffset[i] -= 1000; 
+//      NextLowOffset[i] = LowOffset[i];
+//    } else {
+//      HighOffset[i] += 1000;
+//      NextHighOffset[i] = HighOffset[i];
+//    }
+//  }
+//
+//  done = true;
+//  
+//  // Calibration Phase 2 (NSlow)
+//  N = NSlow;
+//  while (!done && iterationCount < maxIterations) {
+//    iterationCount++;
+//    done = true;
+//    
+//    // Get low offsets
+//    SetOffsets(); // Set the low offsets
+//    GetSmoothed(); // Get smoothed values
+//    for (int i = 0; i < 6; i++) {
+//      if (Smoothed[i] >= Target[i]) { 
+//        done = false;
+//        NextLowOffset[i] = LowOffset[i] - 1000;
+//      } else {
+//        NextLowOffset[i] = LowOffset[i];
+//      }
+//    }
+//
+//    // Get high offsets
+//    SetOffsets(); // Set the high offsets
+//    GetSmoothed(); // Get smoothed values
+//    for (int i = 0; i < 6; i++) {
+//      if (Smoothed[i] <= Target[i]) {
+//        done = false;
+//        NextHighOffset[i] = HighOffset[i] + 1000;
+//      } else {
+//        NextHighOffset[i] = HighOffset[i];
+//      }
+//    }
+//    
+//    // Update LowOffset and HighOffset after checking smoothed values
+//    for (int i = 0; i < 6; i++) {
+//      LowOffset[i] = NextLowOffset[i];
+//      HighOffset[i] = NextHighOffset[i];
+//      
+//      // Stop if the difference between LowOffset and HighOffset is within tolerance
+//      if (abs(HighOffset[i] - LowOffset[i]) > tolerance) {
+//        done = false;
+//      }
+//    }
+//
+//    // Print debugging output every 10 iterations
+//    if (debug && iterationCount % 10 == 0) {
+//      Serial.print("Iteration: ");
+//      Serial.print(iterationCount);
+//      Serial.print(" - Done: ");
+//      Serial.println(done ? "Yes" : "No");
+//
+//      for (int i = 0; i < 6; i++) {
+//        Serial.print("Axis ");
+//        Serial.print(i);
+//        Serial.print(": LowOffset = ");
+//        Serial.print(LowOffset[i]);
+//        Serial.print(", HighOffset = ");
+//        Serial.print(HighOffset[i]);
+//        Serial.print(", Difference = ");
+//        Serial.println(abs(HighOffset[i] - LowOffset[i]));
+//      }
+//    }
+//
+//    // Break out if max iterations reached
+//    if (iterationCount >= maxIterations) {
+//      Serial.println("Max iterations reached without convergence.");
+//      break;
+//    }
+//
+//    
+//  }
+//
+//  // Apply the final offsets using the SetOffsets helper function
+//  SetOffsets();  
+//}
