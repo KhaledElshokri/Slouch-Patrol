@@ -13,6 +13,8 @@ std::vector<String> Get_Memory(String arg);
 std::vector<String> Get_Calibration(String arg);
 std::vector<String> Set_Calibration(String arg);
 
+//void Deep_Calibration(int ID);
+
 
 // Function pointer type for command handlers
 //typedef void (*CommandHandler)();
