@@ -15,7 +15,15 @@ public class SharedPreferencesHelper {
         deviceSettings.setDeviceName(sharedPreferences.getString("DeviceName", null));
         deviceSettings.setLastInitialized(sharedPreferences.getString("LastInitialized", ""));
         deviceSettings.setPushNotifications(sharedPreferences.getBoolean("PushNotifications", false));
-        deviceSettings.setConnectionStatus(sharedPreferences.getString("ConnectionStatus", ""));
+        deviceSettings.setConnectionStatus(sharedPreferences.getString("ConnectionStatus", "NOT CONNECTED"));
+    }
+
+    public void updateDeviceSettings(Context context) {
+        sharedPreferences = context.getSharedPreferences("DevicePreferences", Context.MODE_PRIVATE);
+        deviceSettings.setDeviceName(sharedPreferences.getString("DeviceName", null));
+        deviceSettings.setLastInitialized(sharedPreferences.getString("LastInitialized", ""));
+        deviceSettings.setPushNotifications(sharedPreferences.getBoolean("PushNotifications", false));
+        deviceSettings.setConnectionStatus(sharedPreferences.getString("ConnectionStatus", "NOT CONNECTED"));
     }
 
     public DeviceSettings getDeviceSettings() {
