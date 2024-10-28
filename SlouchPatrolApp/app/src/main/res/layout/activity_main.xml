@@ -32,7 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="-60dp"
-        android:text="NOT CONNECTED"
+        android:text=""
         android:textAlignment="center"
         android:textColorLink="@color/primary_dark"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
@@ -144,5 +144,27 @@
             android:textSize="16sp" />
 
     </RelativeLayout>
+
+    <Button
+        android:id="@+id/play_pause_button"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:text="Play/Pause"
+        android:textStyle="bold"
+        android:backgroundTint="@color/primary_color"
+        app:layout_constraintStart_toStartOf="@id/relativeLayout"
+        app:layout_constraintTop_toBottomOf="@id/relativeLayout"
+        android:layout_marginStart="90dp"/>
+
+    <Button
+        android:id="@+id/stop_button"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:text="Stop"
+        android:textStyle="bold"
+        android:backgroundTint="@color/primary_color"
+        app:layout_constraintEnd_toEndOf="@id/relativeLayout"
+        app:layout_constraintTop_toBottomOf="@id/relativeLayout"
+        android:layout_marginEnd="90dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

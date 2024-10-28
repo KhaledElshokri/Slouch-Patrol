@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,15 +16,19 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
     private SensorDataFetcher dataFetcher = new SensorDataFetcher();
     private final Handler handler = new Handler();
+    private SharedPreferencesHelper sharedPreferencesHelper;
+    private DeviceSettings deviceSettings;
     private static final int FETCH_INTERVAL_MS = 100; // Fetch data every 0.1 seconds
 
     private DatabaseHelper databaseHelper;
-    private TextView textViewScore, messageText;
+    private TextView textViewScore, messageText, textViewConnection;
+    private Button buttonStartPause, buttonStop, buttonData, buttonSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +50,17 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Initialize helper classes
         databaseHelper = new DatabaseHelper(this);
+        sharedPreferencesHelper = new SharedPreferencesHelper(this);
+        deviceSettings = sharedPreferencesHelper.getDeviceSettings();
+
+        // Initialize UI elements
         textViewScore = findViewById(R.id.textViewScore);
         messageText = findViewById(R.id.message_text);
+        textViewConnection = findViewById(R.id.textViewConnection);
+        buttonStartPause = findViewById(R.id.play_pause_button);
+        buttonStop = findViewById(R.id.stop_button);
 
         //Fetch the username of the logged-in user from SharedPreferences
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -61,16 +74,50 @@ public class MainActivity extends AppCompatActivity {
             messageText.setText("");
         }
 
+        // TODO: CHECK CONNECTION STATUS, CHECK IF INITIALIZED
+
+        buttonStartPause.setOnClickListener(v -> onClickStartPause());
+        buttonStop.setOnClickListener(v -> onClickStop());
+
         //Button to navigate to Settings
-        Button buttonSettings = findViewById(R.id.buttonSettings);
+        buttonSettings = findViewById(R.id.buttonSettings);
         buttonSettings.setOnClickListener(v -> routeToSettings());
 
         //Button to navigate to Data
-        Button buttonData = findViewById(R.id.buttonData);
+        buttonData = findViewById(R.id.buttonData);
         buttonData.setOnClickListener(v -> routeToData());
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Fetch device settings from SharedPreferences
+        sharedPreferencesHelper.updateDeviceSettings(this);
+        deviceSettings = sharedPreferencesHelper.getDeviceSettings();
+
         // Start periodic fetching of sensor data
-        startFetchingSensorData();
+        if (Objects.equals(deviceSettings.getConnectionStatus(), "CONNECTED")) {
+            // Show Buttons
+            buttonStartPause.setVisibility(View.VISIBLE);
+            buttonStartPause.setText("Start");
+            buttonStop.setVisibility(View.VISIBLE);
+            buttonStop.setEnabled(false);
+
+            // Clear message text
+            messageText.setText("");
+        }
+        else {
+            // Hide Buttons
+            buttonStartPause.setVisibility(View.INVISIBLE);
+            buttonStop.setVisibility(View.INVISIBLE);
+
+            // Show not connected message
+            textViewScore.setText("");
+            messageText.setText("Device not connected or initialized.");
+        }
+        textViewConnection.setText(deviceSettings.getConnectionStatus());
     }
 
     private boolean isUserLoggedIn() {
@@ -122,6 +169,46 @@ public class MainActivity extends AppCompatActivity {
         if (userCursor != null) {
             userCursor.close();
         }
+    }
+
+    private void onClickStartPause() {
+
+        if (buttonStartPause.getText().equals("Start")) {
+            // Toggle Text
+            buttonStartPause.setText("Pause");
+            // Enable Stop button
+            buttonStop.setEnabled(true);
+
+            // Disable goToSettings & goToData buttons
+            buttonSettings.setEnabled(false);
+            buttonData.setEnabled(false);
+            // Start fetching
+            startFetchingSensorData();
+        } else {
+            // Toggle Text
+            buttonStartPause.setText("Start");
+            // Disable Stop button
+            buttonStop.setEnabled(false);
+
+            // Enable goToSettings & goToData buttons
+            buttonSettings.setEnabled(true);
+            buttonData.setEnabled(true);
+
+            // Pause fetching
+            // TODO: Pause Reading (with the ability to resume)
+        }
+    }
+
+    private void onClickStop() {
+        // Toggle Text
+        buttonStartPause.setText("Start");
+        // Enable goToSettings & goToData buttons
+        buttonSettings.setEnabled(true);
+        buttonData.setEnabled(true);
+
+        // New reading would be taken, refresh main activity
+        finish();
+        startActivity(getIntent());
     }
 
     private void routeToSettings() {
