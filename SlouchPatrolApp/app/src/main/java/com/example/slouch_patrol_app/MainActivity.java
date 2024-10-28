@@ -15,15 +15,18 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
     private SensorDataFetcher dataFetcher = new SensorDataFetcher();
     private final Handler handler = new Handler();
+    private SharedPreferencesHelper sharedPreferencesHelper;
+    private DeviceSettings deviceSettings;
     private static final int FETCH_INTERVAL_MS = 100; // Fetch data every 0.1 seconds
 
     private DatabaseHelper databaseHelper;
-    private TextView textViewScore, messageText;
+    private TextView textViewScore, messageText, textViewConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +48,14 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Initialize helper classes
         databaseHelper = new DatabaseHelper(this);
+        sharedPreferencesHelper = new SharedPreferencesHelper(this);
+        deviceSettings = sharedPreferencesHelper.getDeviceSettings();
+
         textViewScore = findViewById(R.id.textViewScore);
         messageText = findViewById(R.id.message_text);
+        textViewConnection = findViewById(R.id.textViewConnection);
 
         //Fetch the username of the logged-in user from SharedPreferences
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -61,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
             messageText.setText("");
         }
 
+        // TODO: CHECK CONNECTION STATUS, CHECK IF INITIALIZED
+
+
         //Button to navigate to Settings
         Button buttonSettings = findViewById(R.id.buttonSettings);
         buttonSettings.setOnClickListener(v -> routeToSettings());
@@ -69,8 +80,26 @@ public class MainActivity extends AppCompatActivity {
         Button buttonData = findViewById(R.id.buttonData);
         buttonData.setOnClickListener(v -> routeToData());
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Fetch device settings from SharedPreferences
+        sharedPreferencesHelper.updateDeviceSettings(this);
+        deviceSettings = sharedPreferencesHelper.getDeviceSettings();
+
         // Start periodic fetching of sensor data
-        startFetchingSensorData();
+        if (Objects.equals(deviceSettings.getConnectionStatus(), "CONNECTED")) {
+            startFetchingSensorData();
+            messageText.setText("");
+        }
+        else {
+            textViewScore.setText("");
+            messageText.setText("Device not connected or initialized.");
+        }
+        textViewConnection.setText(deviceSettings.getConnectionStatus());
     }
 
     private boolean isUserLoggedIn() {
