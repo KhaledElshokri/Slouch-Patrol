@@ -20,7 +20,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "MAILGUN_KEY", "\"${apikeyProperties['MAILGUN_KEY']}\""
-        buildConfigField "String", "TIM_EMAIL", "\"${apikeyProperties['TIM_EMAIL']}\""
+        buildConfigField "String", "NONPROD_EMAIL", "\"${apikeyProperties['NONPROD_EMAIL']}\""
     }
 
     buildTypes {

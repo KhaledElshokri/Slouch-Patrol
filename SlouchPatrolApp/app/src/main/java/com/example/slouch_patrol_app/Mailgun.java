@@ -30,7 +30,6 @@ public class Mailgun {
                 .queryString("subject", subject)
                 .queryString("text", body)
                 .asJson();
-                System.out.println(response.getBody());
                 return response.getBody();
 
     }
@@ -41,7 +40,7 @@ public class Mailgun {
         HttpResponse<JsonNode> response = Unirest.post(MESSAGE_ENDPOINT)
                 .basicAuth("api", BuildConfig.MAILGUN_KEY)
                 .queryString("from", "<TEST@slouchpatrol.ttaggart.ca>")
-                .queryString("to", BuildConfig.TIM_EMAIL)
+                .queryString("to", BuildConfig.NONPROD_EMAIL)
                 .queryString("subject", "TEST")
                 .queryString("text", testBody)
                 .asJson();
