@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">Slouch-Patrol-App</string>
+    <string name="recalibrate_device">Recalibrate Device</string>
+    <string name="stop_session">Stop Session</string>
+    <string name="resume">RESUME</string>
+    <string name="save_fragment_name">SAVE</string>
+    <string name="name">Name</string>
+    <string name="notes">Describe how your session went.</string>
+    <string name="discard">DISCARD</string>
+    <string name="save_session">SAVE SESSION</string>
+    <string-array name="activity_type">
+        <item>Studying</item>
+        <item>Work</item>
+        <item>Gaming</item>
+        <item>Movie/TV</item>
+        <item>OTHER</item>
+    </string-array>
 </resources>
