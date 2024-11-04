@@ -79,7 +79,7 @@
 
     <!-- Relative layout for the circle and score -->
     <RelativeLayout
-        android:id="@+id/relativeLayout"
+        android:id="@+id/relativeLayoutScore"
         android:layout_width="match_parent"
         android:layout_height="500dp"
         app:layout_constraintTop_toBottomOf="@+id/textViewHome"
@@ -152,8 +152,8 @@
         android:text="Play/Pause"
         android:textStyle="bold"
         android:backgroundTint="@color/primary_color"
-        app:layout_constraintStart_toStartOf="@id/relativeLayout"
-        app:layout_constraintTop_toBottomOf="@id/relativeLayout"
+        app:layout_constraintStart_toStartOf="@id/relativeLayoutScore"
+        app:layout_constraintTop_toBottomOf="@id/relativeLayoutScore"
         android:layout_marginStart="90dp"/>
 
     <Button
@@ -163,8 +163,8 @@
         android:text="Stop"
         android:textStyle="bold"
         android:backgroundTint="@color/primary_color"
-        app:layout_constraintEnd_toEndOf="@id/relativeLayout"
-        app:layout_constraintTop_toBottomOf="@id/relativeLayout"
+        app:layout_constraintEnd_toEndOf="@id/relativeLayoutScore"
+        app:layout_constraintTop_toBottomOf="@id/relativeLayoutScore"
         android:layout_marginEnd="90dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

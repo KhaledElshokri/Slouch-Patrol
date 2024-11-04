@@ -17,7 +17,7 @@
         android:textStyle="bold"
         android:textColor="@color/white"
         android:gravity="center"
-        android:background="@color/primary_dark"
+        android:background="@drawable/rectangle"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -86,7 +86,7 @@
 
     <!-- BOTTOM PORTION SAVE/DISCARD -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/relativeLayoutSave"
+        android:id="@+id/constraintLayoutSaveDiscard"
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:background="@drawable/rectangle"
@@ -111,6 +111,7 @@
             app:layout_constraintHorizontal_chainStyle="packed"
             app:cornerRadius="10dp" />
 
+        <!-- Discard Activity -->
         <Button
             android:id="@+id/discardActivityButton"
             android:layout_width="150dp"
