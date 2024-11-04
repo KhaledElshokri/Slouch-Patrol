@@ -8,6 +8,10 @@
     <string name="notes">Describe how your session went.</string>
     <string name="discard">DISCARD</string>
     <string name="save_session">SAVE SESSION</string>
+    <string name="finish">FINISH</string>
+    <string name="summary">SUMMARY</string>
+    <string name="average_score">AVERAGE SCORE</string>
+    <string name="session_runtime">SESSION RUNTIME</string>
     <string-array name="activity_type">
         <item>Studying</item>
         <item>Work</item>
