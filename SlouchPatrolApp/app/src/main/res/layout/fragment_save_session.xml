@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/save_session_fragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SaveSessionFragment">
+
+    <!-- TOP TEXT NAME OF FRAGMENT -->
+    <TextView
+        android:id="@+id/textViewSAVE"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="@string/save_fragment_name"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:background="@color/primary_dark"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- TO RESUME ACTIVITY -->
+    <Button
+        android:id="@+id/resumeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:text="@string/resume"
+        android:textSize="16sp"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/primary_dark"
+        android:gravity="center"
+        app:cornerRadius="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- EDIT FIELDS -->
+    <RelativeLayout
+        android:id="@+id/relativeLayoutFields"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:layout_marginTop="50dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewSAVE">
+
+        <!-- NAME OF ACTIVITY -->
+        <EditText
+            android:id="@+id/editTextName"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/edit_text_shape"
+            android:hint="@string/name"
+            android:importantForAutofill="no"
+            android:inputType="text" />
+
+        <Spinner
+            android:id="@+id/activityTypeSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_below="@id/editTextName"
+            android:layout_margin="20dp"
+            app:cornerRadius="10dp" />
+
+
+        <!-- DESCRIPTION -->
+        <EditText
+            android:id="@+id/editTextNotes"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_margin="20dp"
+            android:layout_below="@id/activityTypeSpinner"
+            android:background="@drawable/edit_text_shape"
+            android:hint="@string/notes"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine"
+            android:textColor="@color/dark_text"
+            android:lines="15"
+            android:gravity="top"
+            android:scrollbars="vertical"
+            android:scrollHorizontally="false"/>
+
+    </RelativeLayout>
+
+    <!-- BOTTOM PORTION SAVE/DISCARD -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/relativeLayoutSave"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="@drawable/rectangle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- ON SAVE -->
+        <Button
+            android:id="@+id/saveSessionButton"
+            android:layout_width="150dp"
+            android:layout_height="60dp"
+            android:layout_margin="10dp"
+            android:text="@string/save_session"
+            android:textColor="@color/dark_text"
+            android:textStyle="bold"
+            android:backgroundTint="@color/primary_color"
+            app:layout_constraintEnd_toStartOf="@id/discardActivityButton"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:cornerRadius="10dp" />
+
+        <Button
+            android:id="@+id/discardActivityButton"
+            android:layout_width="150dp"
+            android:layout_height="60dp"
+            android:layout_margin="10dp"
+            android:backgroundTint="@color/primary_color"
+            android:text="@string/discard"
+            android:textColor="@color/dark_text"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/saveSessionButton"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:cornerRadius="10dp" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
