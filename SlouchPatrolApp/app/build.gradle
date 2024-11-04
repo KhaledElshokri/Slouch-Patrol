@@ -2,6 +2,11 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+def apikeyPropertiesFile = rootProject.file("apikey.properties")
+def apikeyProperties = new Properties()
+apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+
+
 android {
     namespace 'com.example.slouch_patrol_app'
     compileSdk 34
@@ -14,6 +19,8 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "MAILGUN_KEY", "\"${apikeyProperties['MAILGUN_KEY']}\""
+        buildConfigField "String", "NONPROD_EMAIL", "\"${apikeyProperties['NONPROD_EMAIL']}\""
     }
 
     buildTypes {
@@ -22,9 +29,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    buildFeatures {
+        buildConfig = true
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
     }
 }
 
@@ -36,7 +49,12 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.preference
     implementation libs.okhttp
+    implementation (libs.testng) {
+        exclude group: 'org.hamcrest', module: 'hamcrest-core'
+    }
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+    implementation libs.unirest.java
+    implementation libs.listenablefuture
 }
