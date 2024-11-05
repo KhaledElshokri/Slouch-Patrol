@@ -1,4 +1,6 @@
-package com.example.slouch_patrol_app;
+package com.example.slouch_patrol_app.Features;
+
+import com.example.slouch_patrol_app.BuildConfig;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

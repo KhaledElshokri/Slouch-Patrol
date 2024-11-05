@@ -1,34 +1,39 @@
-package com.example.slouch_patrol_app;
+/*
+package com.example.slouch_patrol_app.Controller.Activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ImageButton;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.PreferenceManager;
 
-import java.io.IOException;
+import com.example.slouch_patrol_app.Controller.Fragments.CalibrationFragment;
+import com.example.slouch_patrol_app.Helpers.DatabaseHelper;
+import com.example.slouch_patrol_app.R;
+
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
-    private SensorDataFetcher dataFetcher = new SensorDataFetcher();
-    private final Handler handler = new Handler();
-    private SharedPreferencesHelper sharedPreferencesHelper;
-    private DeviceSettings deviceSettings;
-    private static final int FETCH_INTERVAL_MS = 100; // Fetch data every 0.1 seconds
+    */
+/*//*
+/private SensorDataFetcher dataFetcher = new SensorDataFetcher();
+    //private final Handler handler = new Handler();
+    //private SharedPreferencesHelper sharedPreferencesHelper;
+    //private DeviceSettings deviceSettings;
+    //private static final int FETCH_INTERVAL_MS = 100; // Fetch data every 0.1 seconds
+*//*
 
     private DatabaseHelper databaseHelper;
-    private TextView textViewScore, messageText, textViewConnection;
-    private Button buttonStartPause, buttonStop, buttonData, buttonSettings;
+    private Button buttonStartActivity, buttonActivityLog;
+    private ImageButton buttonSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,42 +55,27 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Initialize helper classes
+        */
+/*//*
+/ Initialize helper classes
         databaseHelper = new DatabaseHelper(this);
         sharedPreferencesHelper = new SharedPreferencesHelper(this);
-        deviceSettings = sharedPreferencesHelper.getDeviceSettings();
+        deviceSettings = sharedPreferencesHelper.getDeviceSettings();*//*
 
-        // Initialize UI elements
-        textViewScore = findViewById(R.id.textViewScore);
-        messageText = findViewById(R.id.message_text);
-        textViewConnection = findViewById(R.id.textViewConnection);
-        buttonStartPause = findViewById(R.id.play_pause_button);
-        buttonStop = findViewById(R.id.stop_button);
+
+        // Initialize Buttons
+        buttonStartActivity = findViewById(R.id.startSessionButton);
+        buttonActivityLog = findViewById(R.id.activityLogButton);
+        buttonSettings = findViewById(R.id.settingsButton);
+
+        // Initialize Button Actions
+        buttonStartActivity.setOnClickListener(v -> startCalibrationFragment());
+        buttonActivityLog.setOnClickListener(v -> routeToActivityLog());
+        buttonSettings.setOnClickListener(v -> routeToSettings());
 
         //Fetch the username of the logged-in user from SharedPreferences
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String username = sharedPreferences.getString("username", null);
-
-        if (username != null) {
-            //Fetch and display the user's score
-            displayUserScore(username);
-        } else {
-            textViewScore.setText("");
-            messageText.setText("");
-        }
-
-        // TODO: CHECK CONNECTION STATUS, CHECK IF INITIALIZED
-
-        buttonStartPause.setOnClickListener(v -> onClickStartPause());
-        buttonStop.setOnClickListener(v -> onClickStop());
-
-        //Button to navigate to Settings
-        buttonSettings = findViewById(R.id.buttonSettings);
-        buttonSettings.setOnClickListener(v -> routeToSettings());
-
-        //Button to navigate to Data
-        buttonData = findViewById(R.id.buttonData);
-        buttonData.setOnClickListener(v -> routeToData());
 
     }
 
@@ -120,12 +110,16 @@ public class MainActivity extends AppCompatActivity {
         textViewConnection.setText(deviceSettings.getConnectionStatus());
     }
 
-    private boolean isUserLoggedIn() {
+   */
+/* private boolean isUserLoggedIn() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         return sharedPreferences.getBoolean("isLoggedIn", false);
-    }
+    }*//*
 
-    //Function to query the database and display the user's score
+
+    */
+/*//*
+/Function to query the database and display the user's score
     private void displayUserScore(String username) {
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
         Cursor userCursor = db.rawQuery(
@@ -209,6 +203,12 @@ public class MainActivity extends AppCompatActivity {
         // New reading would be taken, refresh main activity
         finish();
         startActivity(getIntent());
+    }*//*
+
+
+    private void startCalibrationFragment() {
+        CalibrationFragment calibrationFragment = new CalibrationFragment();
+        calibrationFragment.show(getSupportFragmentManager(), "fragment_calibration");
     }
 
     private void routeToSettings() {
@@ -216,12 +216,15 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void routeToData() {
+    private void routeToActivityLog() {
         Intent intent = new Intent(MainActivity.this, DataActivity.class);
         startActivity(intent);
     }
 
-    private void startFetchingSensorData() {
+
+
+    */
+/*private void startFetchingSensorData() {
         handler.post(fetchSensorDataRunnable); // Start the periodic fetching
     }
 
@@ -231,9 +234,11 @@ public class MainActivity extends AppCompatActivity {
             fetchSensorData();
             handler.postDelayed(this, FETCH_INTERVAL_MS); // Repeat after the specified interval
         }
-    };
+    };*//*
 
-    private void fetchSensorData() {
+
+    */
+/*private void fetchSensorData() {
         new Thread(() -> {
             try {
                 String sensorData = dataFetcher.getSensorData(); // Fetch data in the background
@@ -252,10 +257,14 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
     }
+*//*
 
-    @Override
+   */
+/* @Override
     protected void onDestroy() {
         super.onDestroy();
         handler.removeCallbacks(fetchSensorDataRunnable); // Stop fetching when the activity is destroyed
-    }
+    }*//*
+
 }
+*/

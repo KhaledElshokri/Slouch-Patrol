@@ -5,7 +5,7 @@
     android:id="@+id/save_session_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SaveSessionFragment">
+    tools:context=".Controller.Fragments.SaveSessionFragment">
 
     <!-- TOP TEXT NAME OF FRAGMENT -->
     <TextView
@@ -54,15 +54,20 @@
             android:background="@drawable/edit_text_shape"
             android:hint="@string/name"
             android:importantForAutofill="no"
-            android:inputType="text" />
+            android:inputType="text"
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+            android:maxLength="20"/>
 
         <Spinner
             android:id="@+id/activityTypeSpinner"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_below="@id/editTextName"
+            android:textStyle="bold"
             android:layout_margin="20dp"
-            app:cornerRadius="10dp" />
+            android:background="@drawable/rectangle"
+            android:backgroundTint="@color/primary_color"
+            app:cornerRadius="20dp" />
 
 
         <!-- DESCRIPTION -->
@@ -77,6 +82,7 @@
             android:importantForAutofill="no"
             android:inputType="textMultiLine"
             android:textColor="@color/dark_text"
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
             android:lines="15"
             android:gravity="top"
             android:scrollbars="vertical"
@@ -88,7 +94,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayoutSaveDiscard"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="150dp"
         android:background="@drawable/rectangle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -103,8 +109,9 @@
             android:text="@string/save_session"
             android:textColor="@color/dark_text"
             android:textStyle="bold"
+            android:textSize="20sp"
             android:backgroundTint="@color/primary_color"
-            app:layout_constraintEnd_toStartOf="@id/discardActivityButton"
+            app:layout_constraintEnd_toStartOf="@id/discardSessionButton"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -113,7 +120,7 @@
 
         <!-- Discard Activity -->
         <Button
-            android:id="@+id/discardActivityButton"
+            android:id="@+id/discardSessionButton"
             android:layout_width="150dp"
             android:layout_height="60dp"
             android:layout_margin="10dp"

@@ -1,7 +1,7 @@
 package com.example.slouch_patrol_app.UnitTests;
 
-import static com.example.slouch_patrol_app.Mailgun.sendProdEmail;
-import static com.example.slouch_patrol_app.Mailgun.sendNonProdEmail;
+import static com.example.slouch_patrol_app.Features.Mailgun.sendProdEmail;
+import static com.example.slouch_patrol_app.Features.Mailgun.sendNonProdEmail;
 
 import org.junit.Test;
 

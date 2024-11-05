@@ -7,12 +7,17 @@
     <string name="name">Name</string>
     <string name="notes">Describe how your session went.</string>
     <string name="discard">DISCARD</string>
-    <string name="save_session">SAVE SESSION</string>
+    <string name="save_session">SAVE</string>
     <string name="finish">FINISH</string>
     <string name="summary">SUMMARY</string>
     <string name="average_score">AVERAGE SCORE</string>
     <string name="session_runtime">SESSION RUNTIME</string>
-    <string-array name="activity_type">
+    <string name="slouch_patrol">SLOUCH PATROL</string>
+    <string name="settingsDescription">Settings</string>
+    <string name="activity_log">Activity Log</string>
+    <string name="calibration">CALIBRATION</string>
+    <string name="calibrate_device">CALIBRATE DEVICE</string>
+    <string-array name="session_types">
         <item>Studying</item>
         <item>Work</item>
         <item>Gaming</item>

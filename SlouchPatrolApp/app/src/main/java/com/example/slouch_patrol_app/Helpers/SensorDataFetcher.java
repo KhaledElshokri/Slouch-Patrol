@@ -1,4 +1,4 @@
-package com.example.slouch_patrol_app;
+package com.example.slouch_patrol_app.Helpers;
 
 import java.io.IOException;
 

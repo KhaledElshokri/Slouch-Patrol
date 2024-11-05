@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home_activity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Controller.Activities.HomeActivity">
+
+    <!-- TOP NAME BAR -->
+    <TextView
+        android:id="@+id/textViewName"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="@string/slouch_patrol"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:textSize="26sp"
+        android:background="@drawable/rectangle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <!-- SETTINGS BUTTON -->
+    <ImageButton
+        android:id="@+id/settingsButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:contentDescription="@string/settingsDescription"
+        android:background="@color/primary_dark"
+        app:srcCompat="@drawable/settings_button"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- MIDDLE BUTTON -->
+    <Button
+        android:id="@+id/startSessionButton"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:backgroundTint="@color/primary_color"
+        android:text="Start Session"
+        android:textStyle="bold"
+        android:textSize="34sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewName"
+        app:layout_constraintBottom_toTopOf="@id/constraintLayoutBottom"
+        app:cornerRadius="100dp"/>
+
+
+    <!-- BOTTOM PORTION -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayoutBottom"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="@drawable/rectangle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Data button -->
+        <Button
+            android:id="@+id/activityLogButton"
+            android:layout_width="160dp"
+            android:layout_height="60dp"
+            android:backgroundTint="@color/primary_color"
+            android:text="@string/activity_log"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/dark_text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:cornerRadius="10dp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
