@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,9 +19,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.PreferenceManager;
 
 import com.example.slouch_patrol_app.Controller.Fragments.*;
-import com.example.slouch_patrol_app.Helpers.DatabaseHelper;
-import com.example.slouch_patrol_app.Helpers.SensorDataFetcher;
-import com.example.slouch_patrol_app.Helpers.SharedPreferencesHelper;
+import com.example.slouch_patrol_app.Helpers.*;
 import com.example.slouch_patrol_app.R;
 
 import java.io.IOException;
@@ -87,6 +86,7 @@ public class MainActivity
         if (isConnected) {
             //TODO: DISPLAY SCORE
             // APP IS RUNNING -> DISPLAY SCORE
+            startFetchingSensorData();
         } else {
             Toast.makeText(this, "Device Unable to be Calibrated", Toast.LENGTH_SHORT).show();
         }
@@ -109,6 +109,7 @@ public class MainActivity
         } else if (event.equals("resume")) {
             // TODO: DISPLAY SCORE
             //       APP IS RUNNING -> DISPLAY SCORE
+            startFetchingSensorData();
         } else { // if (event.equals("save")) -- note: default is to save if something goes wrong
             // TODO: SAVE SESSION
             //       Name, type, notes (if any)
@@ -210,7 +211,7 @@ public class MainActivity
                 String displayValue = (index !=- 1) ? sensorData.substring(0, index) : sensorData ;
                 runOnUiThread(() -> {
                     TextView sensorInput = findViewById(R.id.textViewScore);
-                    sensorInput.setText(displayValue); // Update UI with the fetched data
+                    sensorInput.setText(displayValue);// Update UI with the fetched data
                 });
             } catch (IOException e) {
                 e.printStackTrace(); // Log the error
@@ -220,5 +221,25 @@ public class MainActivity
                 });
             }
         }).start();
+    }
+
+    private void setBackgroundColor(int score) {
+        View view = this.getWindow().getDecorView();
+
+        // red      0xB30231
+        // green    0x2D9F13
+        // orange   0xFF6F4B
+        // yellow   0xF7F93C
+
+
+        if (score >= 90) {
+            view.setBackgroundColor(0x2D9F13); // green
+        } else if (score >= 70) {
+            view.setBackgroundColor(0xF7F93C); // yellow
+        } else if (score >= 40) {
+            view.setBackgroundColor(0xFF6F4B); // orange
+        } else {
+            view.setBackgroundColor(0xB30231); // red
+        }
     }
 }

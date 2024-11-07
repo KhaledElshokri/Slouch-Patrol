@@ -49,7 +49,6 @@
             android:name=".Controller.Activities.MainActivity"
             android:parentActivityName=".Controller.Activities.HomeActivity"
             android:exported="false" />
-
     </application>
 
 </manifest>
