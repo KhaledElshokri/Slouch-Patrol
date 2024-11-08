@@ -19,7 +19,7 @@ const char* password = "WIFIPASSWORD";
 
 WebServer server(80); // Create a web server object that listens on port 80
 
-static String AppData = "Calibrating...";
+static String AppData = "IMUs are not initialised or not calibrated";
 
 // Function to handle the root URL ("/")
 void handleRoot() {
@@ -169,7 +169,9 @@ void loop() {
           sensor.pitch = ypr[1] * RAD_TO_DEG;
           sensor.roll = ypr[2] * RAD_TO_DEG;
 
-          AppData = String(sensor.pitch);                                     // We send this to the app
+          // Add to the string that will be delivered
+          AppData += "IMU"+ String(i) + ":" + String(sensor.yaw) + "," + String(sensor.pitch) + "," + String(sensor.roll) + ";" ;
+
         }
       }    
     }    
@@ -177,6 +179,9 @@ void loop() {
   
   server.handleClient();                                                      // Handle client requests
   
+  // Reset the string for next transmission
+  AppData = "";
+
   // Calculate time spent during this loop iteration
   unsigned long endTime = millis();
   unsigned long elapsedTime = endTime - startTime;
