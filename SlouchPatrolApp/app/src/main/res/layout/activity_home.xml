@@ -8,6 +8,7 @@
     android:layout_height="match_parent"
     tools:context=".Controller.Activities.HomeActivity">
 
+
     <!-- TOP NAME BAR -->
     <TextView
         android:id="@+id/textViewName"
@@ -39,9 +40,10 @@
         android:layout_width="300dp"
         android:layout_height="200dp"
         android:backgroundTint="@color/primary_color"
-        android:text="Start Session"
+        android:text="@string/start_session"
         android:textStyle="bold"
         android:textSize="34sp"
+        android:textColor="@color/dark_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewName"
