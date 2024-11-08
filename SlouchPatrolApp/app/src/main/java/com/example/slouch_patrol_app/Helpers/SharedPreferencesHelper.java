@@ -1,7 +1,9 @@
-package com.example.slouch_patrol_app;
+package com.example.slouch_patrol_app.Helpers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import com.example.slouch_patrol_app.Model.DeviceSettings;
 
 public class SharedPreferencesHelper {
 

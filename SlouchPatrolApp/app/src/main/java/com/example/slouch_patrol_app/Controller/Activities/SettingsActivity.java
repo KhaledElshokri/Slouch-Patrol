@@ -1,6 +1,4 @@
-package com.example.slouch_patrol_app;
-
-import static androidx.core.content.ContentProviderCompat.requireContext;
+package com.example.slouch_patrol_app.Controller.Activities;
 
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -17,6 +15,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.appcompat.widget.Toolbar;
+
+import com.example.slouch_patrol_app.Model.DeviceSettings;
+import com.example.slouch_patrol_app.R;
+import com.example.slouch_patrol_app.Helpers.SharedPreferencesHelper;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -44,7 +46,7 @@ public class SettingsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         // Set Up Insets
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.home_activity), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;

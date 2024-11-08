@@ -6,4 +6,5 @@
     <color name="primary_dark">#5452c0</color>    <!-- Dark Purple -->
     <color name="background_color">#fef7ff</color> <!-- White/Purple -->
     <color name="text_color">#000000</color>
+    <color name="dark_text">#282840</color> <!-- Dark Purple for Text-->
 </resources>

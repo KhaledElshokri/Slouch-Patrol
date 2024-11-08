@@ -18,7 +18,7 @@
 
         <!-- Declare LoginActivity and make it the launcher activity -->
         <activity
-            android:name=".LoginActivity"
+            android:name=".Controller.Activities.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,7 +27,7 @@
         </activity>
 
         <activity
-            android:name=".MainActivity"
+            android:name=".Controller.Activities.HomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -36,15 +36,19 @@
         </activity>
 
         <activity
-            android:name=".DataActivity"
-            android:parentActivityName=".MainActivity"
+            android:name=".Controller.Activities.DataActivity"
+            android:parentActivityName=".Controller.Activities.HomeActivity"
             android:exported="false" />
 
         <activity
-            android:name=".SettingsActivity"
-            android:parentActivityName=".MainActivity"
+            android:name=".Controller.Activities.SettingsActivity"
+            android:parentActivityName=".Controller.Activities.HomeActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".Controller.Activities.MainActivity"
+            android:parentActivityName=".Controller.Activities.HomeActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

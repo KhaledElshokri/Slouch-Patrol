@@ -1,4 +1,4 @@
-package com.example.slouch_patrol_app;
+package com.example.slouch_patrol_app.Controller.Activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,6 +8,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
+
+import com.example.slouch_patrol_app.Helpers.DatabaseHelper;
+import com.example.slouch_patrol_app.R;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -44,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
                 editor.apply();
 
                 //Redirect to MainActivity
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                 startActivity(intent);
                 finish();
             } else {
@@ -70,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
                 editor.apply();
 
                 //Redirect to MainActivity
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                 startActivity(intent);
                 finish();
             } else {
