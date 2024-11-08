@@ -57,7 +57,8 @@
             android:hint="@string/name"
             android:importantForAutofill="no"
             android:inputType="text"
-            android:maxLength="20" />
+            android:maxLength="20"
+            android:textColorHint="@color/background_color" />
 
         <Spinner
             android:id="@+id/activityTypeSpinner"
@@ -65,8 +66,8 @@
             android:layout_height="48dp"
             android:layout_below="@id/editTextName"
             android:layout_margin="20dp"
-            android:background="@drawable/rectangle"
-            android:backgroundTint="@color/primary_color"
+            android:background="@color/background_color"
+            android:backgroundTint="@android:color/system_primary_container_dark"
             android:textStyle="bold"
             app:cornerRadius="20dp" />
 
@@ -87,7 +88,8 @@
             android:lines="15"
             android:scrollbars="vertical"
             android:scrollHorizontally="false"
-            android:textColor="@color/dark_text" />
+            android:textColor="@color/background_color"
+            android:textColorHint="@color/background_color" />
 
     </RelativeLayout>
 
