@@ -17,6 +17,7 @@
     <string name="activity_log">Activity Log</string>
     <string name="calibration">CALIBRATION</string>
     <string name="calibrate_device">CALIBRATE DEVICE</string>
+    <string name="start_session">Start Session</string>
     <string-array name="session_types">
         <item>Studying</item>
         <item>Work</item>

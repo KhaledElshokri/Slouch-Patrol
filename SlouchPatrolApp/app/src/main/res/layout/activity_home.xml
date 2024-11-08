@@ -1,82 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/home_activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color"
     tools:context=".Controller.Activities.HomeActivity">
+
 
     <!-- TOP NAME BAR -->
     <TextView
         android:id="@+id/textViewName"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="@drawable/rectangle"
-        android:gravity="center"
         android:text="@string/slouch_patrol"
-        android:textColor="@color/white"
-        android:textSize="26sp"
         android:textStyle="bold"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:textSize="26sp"
+        android:background="@drawable/rectangle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <!-- SETTINGS BUTTON -->
     <ImageButton
         android:id="@+id/settingsButton"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:background="@color/primary_dark"
         android:contentDescription="@string/settingsDescription"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@color/primary_dark"
+        app:srcCompat="@drawable/settings_button"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/settings_button" />
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <!-- MIDDLE BUTTON -->
+    <Button
+        android:id="@+id/startSessionButton"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:backgroundTint="@color/primary_color"
+        android:text="@string/start_session"
+        android:textStyle="bold"
+        android:textSize="34sp"
+        android:textColor="@color/dark_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewName"
+        app:layout_constraintBottom_toTopOf="@id/constraintLayoutBottom"
+        app:cornerRadius="100dp"/>
 
 
     <!-- BOTTOM PORTION -->
-    <Button
-        android:id="@+id/startSessionButton"
-        android:layout_width="220dp"
-        android:layout_height="133dp"
-        android:backgroundTint="@color/primary_color"
-        android:text="Start Session"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:cornerRadius="100dp"
-        app:layout_constraintBottom_toTopOf="@id/constraintLayoutBottom"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewName"
-        app:layout_constraintVertical_bias="0.713" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayoutBottom"
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:background="@drawable/rectangle"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <!-- Data button -->
         <Button
             android:id="@+id/activityLogButton"
-            android:layout_width="180dp"
-            android:layout_height="64dp"
+            android:layout_width="160dp"
+            android:layout_height="60dp"
             android:backgroundTint="@color/primary_color"
             android:text="@string/activity_log"
-            android:textColor="@color/background_color"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:cornerRadius="10dp"
+            android:textColor="@color/dark_text"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:cornerRadius="10dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

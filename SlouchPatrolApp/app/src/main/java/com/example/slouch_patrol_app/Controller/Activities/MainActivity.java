@@ -2,6 +2,7 @@ package com.example.slouch_patrol_app.Controller.Activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.os.Handler;
 
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +34,8 @@ public class MainActivity
         SaveSessionFragment.onSaveFragmentEventListener {
 
 
-    private TextView score;
+    private TextView textViewScore;
+    private RelativeLayout relativeLayout;
     private DatabaseHelper databaseHelper;
     private SharedPreferencesHelper sharedPreferencesHelper;
 
@@ -59,7 +62,8 @@ public class MainActivity
 
         // Initialize Button + Score Display
         ImageButton stopButton = findViewById(R.id.stop_button);
-        score = findViewById(R.id.textViewScore);
+        textViewScore = findViewById(R.id.textViewScore);
+        relativeLayout = findViewById(R.id.relativeLayoutFields);
 
         // Define Button Actions
         stopButton.setOnClickListener(v -> stopSession());
@@ -172,13 +176,13 @@ public class MainActivity
                 int scoreColumnIndex = scoreCursor.getColumnIndex("score");
                 if (scoreColumnIndex != -1) {
                     float score = scoreCursor.getFloat(scoreColumnIndex);
-                    this.score.setText(String.valueOf(score));
+                    this.textViewScore.setText(String.valueOf(score));
                 } else {
-                    score.setText("No score available");
+                    textViewScore.setText("No score available");
                 }
             } else {
                 //No scores found for the user
-                this.score.setText("No score available");
+                this.textViewScore.setText("No score available");
             }
 
             if (scoreCursor != null) {
@@ -210,20 +214,20 @@ public class MainActivity
                 int index = sensorData.indexOf('.');
                 String displayValue = (index !=- 1) ? sensorData.substring(0, index) : sensorData ;
                 runOnUiThread(() -> {
-                    TextView sensorInput = findViewById(R.id.textViewScore);
-                    sensorInput.setText(displayValue);// Update UI with the fetched data
+                    // Update UI with the fetched data
+                    textViewScore.setText(displayValue);
                 });
             } catch (IOException e) {
                 e.printStackTrace(); // Log the error
                 runOnUiThread(() -> {
-                    TextView sensorInput = findViewById(R.id.textViewScore);
-                    sensorInput.setText("Error fetching data: " + e.getMessage()); // Handle error
+                    textViewScore.setText("Error fetching data: " + e.getMessage()); // Handle error
                 });
             }
         }).start();
     }
 
-    private void setBackgroundColor(int score) {
+    // TODO: TEST THIS
+    private int setBackgroundColor(int score) {
         View view = this.getWindow().getDecorView();
 
         // red      0xB30231
@@ -233,13 +237,13 @@ public class MainActivity
 
 
         if (score >= 90) {
-            view.setBackgroundColor(0x2D9F13); // green
+            return 0x2D9F13; // green
         } else if (score >= 70) {
-            view.setBackgroundColor(0xF7F93C); // yellow
+            return 0xF7F93C; // yellow
         } else if (score >= 40) {
-            view.setBackgroundColor(0xFF6F4B); // orange
+            return 0xFF6F4B; // orange
         } else {
-            view.setBackgroundColor(0xB30231); // red
+            return 0xB30231; // red
         }
     }
 }
