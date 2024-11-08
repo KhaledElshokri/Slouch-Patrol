@@ -1,8 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.SlouchPatrolApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">#000000</item>          <!-- Main color, often used for ActionBar/Toolbar -->
     </style>
 
     <style name="Theme.SlouchPatrolApp" parent="Base.Theme.SlouchPatrolApp" />
