@@ -69,7 +69,7 @@
             android:layout_height="64dp"
             android:backgroundTint="@color/primary_color"
             android:text="@string/activity_log"
-            android:textColor="@color/dark_text"
+            android:textColor="@color/background_color"
             android:textSize="20sp"
             android:textStyle="bold"
             app:cornerRadius="10dp"
