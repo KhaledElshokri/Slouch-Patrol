@@ -5,6 +5,7 @@
     android:id="@+id/save_session_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_color"
     tools:context=".Controller.Fragments.SaveSessionFragment">
 
     <!-- TOP TEXT NAME OF FRAGMENT -->
@@ -12,25 +13,25 @@
         android:id="@+id/textViewSAVE"
         android:layout_width="match_parent"
         android:layout_height="60dp"
+        android:background="@drawable/rectangle"
+        android:gravity="center"
         android:text="@string/save_fragment_name"
+        android:textColor="@color/white"
         android:textSize="26sp"
         android:textStyle="bold"
-        android:textColor="@color/white"
-        android:gravity="center"
-        android:background="@drawable/rectangle"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- TO RESUME ACTIVITY -->
     <Button
         android:id="@+id/resumeButton"
         android:layout_width="wrap_content"
         android:layout_height="60dp"
-        android:text="@string/resume"
-        android:textSize="16sp"
-        android:textColor="@color/white"
         android:backgroundTint="@color/primary_dark"
         android:gravity="center"
+        android:text="@string/resume"
+        android:textColor="@color/white"
+        android:textSize="16sp"
         app:cornerRadius="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -52,21 +53,21 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:background="@drawable/edit_text_shape"
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
             android:hint="@string/name"
             android:importantForAutofill="no"
             android:inputType="text"
-            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-            android:maxLength="20"/>
+            android:maxLength="20" />
 
         <Spinner
             android:id="@+id/activityTypeSpinner"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_below="@id/editTextName"
-            android:textStyle="bold"
             android:layout_margin="20dp"
             android:background="@drawable/rectangle"
             android:backgroundTint="@color/primary_color"
+            android:textStyle="bold"
             app:cornerRadius="20dp" />
 
 
@@ -75,18 +76,18 @@
             android:id="@+id/editTextNotes"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:layout_margin="20dp"
             android:layout_below="@id/activityTypeSpinner"
+            android:layout_margin="20dp"
             android:background="@drawable/edit_text_shape"
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+            android:gravity="top"
             android:hint="@string/notes"
             android:importantForAutofill="no"
             android:inputType="textMultiLine"
-            android:textColor="@color/dark_text"
-            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
             android:lines="15"
-            android:gravity="top"
             android:scrollbars="vertical"
-            android:scrollHorizontally="false"/>
+            android:scrollHorizontally="false"
+            android:textColor="@color/dark_text" />
 
     </RelativeLayout>
 
@@ -97,8 +98,8 @@
         android:layout_height="150dp"
         android:background="@drawable/rectangle"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <!-- ON SAVE -->
         <Button
@@ -106,17 +107,17 @@
             android:layout_width="150dp"
             android:layout_height="60dp"
             android:layout_margin="10dp"
+            android:backgroundTint="@color/background_color"
             android:text="@string/save_session"
-            android:textColor="@color/dark_text"
+            android:textColor="@color/black"
+            android:textSize="16sp"
             android:textStyle="bold"
-            android:textSize="20sp"
-            android:backgroundTint="@color/primary_color"
-            app:layout_constraintEnd_toStartOf="@id/discardSessionButton"
-            app:layout_constraintTop_toTopOf="parent"
+            app:cornerRadius="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/discardSessionButton"
             app:layout_constraintHorizontal_chainStyle="packed"
-            app:cornerRadius="10dp" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Discard Activity -->
         <Button
@@ -124,20 +125,19 @@
             android:layout_width="150dp"
             android:layout_height="60dp"
             android:layout_margin="10dp"
-            android:backgroundTint="@color/primary_color"
+            android:backgroundTint="@color/background_color"
             android:text="@string/discard"
-            android:textColor="@color/dark_text"
+            android:textColor="@color/black"
+            android:textSize="16sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/saveSessionButton"
-            app:layout_constraintTop_toTopOf="parent"
+            app:cornerRadius="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:cornerRadius="10dp" />
+            app:layout_constraintStart_toEndOf="@id/saveSessionButton"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
