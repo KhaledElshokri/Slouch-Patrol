@@ -1,4 +1,7 @@
-package com.example.slouch_patrol_app;
+package com.example.slouch_patrol_app.Features;
+
+import com.example.slouch_patrol_app.Helpers.DatabaseHelper;
+import com.example.slouch_patrol_app.Helpers.SensorDataFetcher;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -14,7 +17,7 @@ public class PostureCalculator {
     }
 
     // Parses sensor data string into an array of IMU angles (Yaw, Pitch, Roll)
-    private double[][] parseSensorData(String sensorData) {
+    public double[][] parseSensorData(String sensorData) {
         // Expected format: IMU1:Yaw,Pitch,Roll;IMU2:Yaw,Pitch,Roll;...
         String[] imuData = sensorData.split(";");
         double[][] parsedData = new double[imuData.length][3];

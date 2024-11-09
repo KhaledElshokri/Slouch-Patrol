@@ -125,4 +125,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 null,                             //Don't filter by row groups
                 COLUMN_TIMESTAMP + " DESC");      //Order by the most recent score
     }
+
+    public Integer getUserIdByUsernameAndPassword(String username, String password) {
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT " + COLUMN_USER_ID + " FROM " + USER_TABLE +
+                        " WHERE " + COLUMN_USERNAME + "=? AND " + COLUMN_PASSWORD + "=?",
+                new String[]{username, password});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            int userId;
+            userId = cursor.getInt(cursor.getColumnIndex(COLUMN_USER_ID));
+            cursor.close();
+            return userId;
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+        return null; // User not found or credentials are incorrect
+    }
+
 }

@@ -21,6 +21,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.PreferenceManager;
 
 import com.example.slouch_patrol_app.Controller.Fragments.*;
+import com.example.slouch_patrol_app.Features.PostureCalculator;
 import com.example.slouch_patrol_app.Helpers.*;
 import com.example.slouch_patrol_app.R;
 
@@ -38,6 +39,7 @@ public class MainActivity
     private RelativeLayout relativeLayout;
     private DatabaseHelper databaseHelper;
     private SharedPreferencesHelper sharedPreferencesHelper;
+    private PostureCalculator postureCalculator;
 
     // SENSOR OBJECTS
     private SensorDataFetcher dataFetcher = new SensorDataFetcher();
@@ -57,6 +59,7 @@ public class MainActivity
         // Initialize Helper Classes
         databaseHelper = new DatabaseHelper(this);
         sharedPreferencesHelper = new SharedPreferencesHelper(this);
+        postureCalculator = new PostureCalculator(dataFetcher,databaseHelper);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String username = sharedPreferences.getString("username", null);
 
@@ -210,17 +213,28 @@ public class MainActivity
     private void fetchSensorData() {
         new Thread(() -> {
             try {
-                String sensorData = dataFetcher.getSensorData(); // Fetch data in the background
-                int index = sensorData.indexOf('.');
-                String displayValue = (index !=- 1) ? sensorData.substring(0, index) : sensorData ;
+                // Fetch data in the background
+                String sensorData = dataFetcher.getSensorData();
+
+                // Parse data
+                double[][] sensorParsedData = postureCalculator.parseSensorData(sensorData);
+
+                // Get the user ID
+                String username = sharedPreferencesHelper.getCurrentUser();
+                String password = sharedPreferencesHelper.getCurrentUserPass();
+                int userID = databaseHelper.getUserIdByUsernameAndPassword(username,password);
+
+                // Calculate Posture Score
+                int postureScore = postureCalculator.calculatePostureScore(userID,sensorParsedData);
+                String score = Integer.toString(postureScore);
                 runOnUiThread(() -> {
                     // Update UI with the fetched data
-                    textViewScore.setText(displayValue);
+                    textViewScore.setText(score);
                 });
             } catch (IOException e) {
                 e.printStackTrace(); // Log the error
                 runOnUiThread(() -> {
-                    textViewScore.setText("Error fetching data: " + e.getMessage()); // Handle error
+                    textViewScore.setText("Error fetching data"); // Handle error
                 });
             }
         }).start();
