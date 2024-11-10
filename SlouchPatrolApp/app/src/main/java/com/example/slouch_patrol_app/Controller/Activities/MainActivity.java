@@ -21,6 +21,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.PreferenceManager;
 
 import com.example.slouch_patrol_app.Controller.Fragments.*;
+import com.example.slouch_patrol_app.Features.PostureCalculator;
 import com.example.slouch_patrol_app.Helpers.*;
 import com.example.slouch_patrol_app.R;
 
@@ -38,11 +39,12 @@ public class MainActivity
     private RelativeLayout relativeLayout;
     private DatabaseHelper databaseHelper;
     private SharedPreferencesHelper sharedPreferencesHelper;
+    private PostureCalculator postureCalculator;
 
     // SENSOR OBJECTS
     private SensorDataFetcher dataFetcher = new SensorDataFetcher();
     private final Handler handler = new Handler();
-    private static final int FETCH_INTERVAL_MS = 100; // Fetch data every 0.1 seconds
+    private static final int FETCH_INTERVAL_MS = 500; // Fetch data every 0.5 seconds
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +59,7 @@ public class MainActivity
         // Initialize Helper Classes
         databaseHelper = new DatabaseHelper(this);
         sharedPreferencesHelper = new SharedPreferencesHelper(this);
+        postureCalculator = new PostureCalculator(dataFetcher,databaseHelper);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String username = sharedPreferences.getString("username", null);
 
@@ -210,21 +213,32 @@ public class MainActivity
     private void fetchSensorData() {
         new Thread(() -> {
             try {
-                String sensorData = dataFetcher.getSensorData(); // Fetch data in the background
-                int index = sensorData.indexOf('.');
-                String displayValue = (index !=- 1) ? sensorData.substring(0, index) : sensorData ;
+                // Retrieve user credentials securely in the background thread
+                String username = getCurrentUser();
+
+                // Fetch data and calculate score
+                String sensorData = dataFetcher.getSensorData();
+                int postureScore = postureCalculator.calculatePostureScore(sensorData);
+
+                // Add posture score to database
+                if(username != null)
+                {
+                    databaseHelper.addPostureScoreForCurrentUser(username, postureScore, String.valueOf(System.currentTimeMillis()));
+                }
+
                 runOnUiThread(() -> {
-                    // Update UI with the fetched data
-                    textViewScore.setText(displayValue);
+                    textViewScore.setText(String.valueOf(postureScore));
                 });
             } catch (IOException e) {
-                e.printStackTrace(); // Log the error
-                runOnUiThread(() -> {
-                    textViewScore.setText("Error fetching data: " + e.getMessage()); // Handle error
-                });
+                e.printStackTrace();
+                runOnUiThread(() -> textViewScore.setText("Error fetching data"));
+            } catch (Exception e) {
+                e.printStackTrace();
+                runOnUiThread(() -> textViewScore.setText("Unexpected error occurred: " + e.getMessage()));
             }
         }).start();
     }
+
 
     // TODO: TEST THIS
     private int setBackgroundColor(int score) {
@@ -246,4 +260,18 @@ public class MainActivity
             return 0xB30231; // red
         }
     }
+
+    public String getCurrentUser() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // Check if the "loggedIn" flag is true
+        boolean isLoggedIn = sharedPreferences.getBoolean("loggedIn", false);
+
+        if (isLoggedIn) {
+            return sharedPreferences.getString("username", null);  // Return username if logged in
+        } else {
+            return null;  // Return null if not logged in
+        }
+    }
+
 }

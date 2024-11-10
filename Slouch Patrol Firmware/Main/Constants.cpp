@@ -9,7 +9,7 @@
 #include <Arduino.h>
 
 // Global  variables
-const int8_t numSensor = 1;             // Number of sensors
+const int8_t numSensor = 4;             // Number of sensors
 boolean debug = false;                  // Activate debug mode
 char G_or_MS2 = 'G';                    // Global variable for unit selection (g or m/s²), default is 'G'
 

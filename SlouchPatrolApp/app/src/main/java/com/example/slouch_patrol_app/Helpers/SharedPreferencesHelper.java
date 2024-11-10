@@ -45,6 +45,16 @@ public class SharedPreferencesHelper {
         editor.apply();
     }
 
+    public String getCurrentUser()
+    {
+        return sharedPreferences.getString("username", null);
+    }
+
+    public String getCurrentUserPass()
+    {
+        return sharedPreferences.getString("password", null);
+    }
+
 }
 
 

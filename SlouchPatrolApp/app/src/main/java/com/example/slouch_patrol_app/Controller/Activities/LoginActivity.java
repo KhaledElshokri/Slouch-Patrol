@@ -44,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean("isLoggedIn", true);
                 editor.putString("username", username);
+                editor.putString("password", password);
                 editor.apply();
 
                 //Redirect to MainActivity
@@ -69,7 +70,8 @@ public class LoginActivity extends AppCompatActivity {
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean("isLoggedIn", true);
-                editor.putString("userEmail", username);
+                editor.putString("username", username);
+                editor.putString("password", password);
                 editor.apply();
 
                 //Redirect to MainActivity

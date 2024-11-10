@@ -1,4 +1,7 @@
-package com.example.slouch_patrol_app;
+package com.example.slouch_patrol_app.Features;
+
+import com.example.slouch_patrol_app.Helpers.DatabaseHelper;
+import com.example.slouch_patrol_app.Helpers.SensorDataFetcher;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -14,7 +17,7 @@ public class PostureCalculator {
     }
 
     // Parses sensor data string into an array of IMU angles (Yaw, Pitch, Roll)
-    private double[][] parseSensorData(String sensorData) {
+    public double[][] parseSensorData(String sensorData) {
         // Expected format: IMU1:Yaw,Pitch,Roll;IMU2:Yaw,Pitch,Roll;...
         String[] imuData = sensorData.split(";");
         double[][] parsedData = new double[imuData.length][3];
@@ -47,7 +50,10 @@ public class PostureCalculator {
     }
 
     // Calculate the posture score
-    public int calculatePostureScore(int userId, double[][] imuData) {
+    public int calculatePostureScore(String wifiString) {
+
+        double [][] imuData = parseSensorData(wifiString);
+
         int case1 = calcShoulderRound(imuData);
         int case2 = calcSpineRound(imuData);
         int case3 = calcShoulderAlone(imuData, 0);
@@ -56,24 +62,20 @@ public class PostureCalculator {
         int finalScore = 100 - (case1 + case2 + case3 + case4);
         finalScore = Math.max(0, finalScore); // Ensure the score is not below 0
 
-        // Save the score to the database with a timestamp
-        String timestamp = String.valueOf(System.currentTimeMillis());
-        databaseHelper.addPostureScore(userId, finalScore, timestamp);
-
         return finalScore;
     }
 
     // Fetch and process sensor data
     public void processPostureData(int userId) {
-        try {
-            String sensorData = sensorDataFetcher.getSensorData();
-            double[][] imuData = parseSensorData(sensorData);
+        //try {
+        //    String sensorData = sensorDataFetcher.getSensorData();
+        //    double[][] imuData = parseSensorData(sensorData);
 
-            int postureScore = calculatePostureScore(userId, imuData);
-            System.out.println("Posture Score: " + postureScore);
-        } catch (IOException e) {
-            System.err.println("Error fetching sensor data: " + e.getMessage());
-        }
+        //    int postureScore = calculatePostureScore(userId, imuData);
+        //    System.out.println("Posture Score: " + postureScore);
+        //} catch (IOException e) {
+        //    System.err.println("Error fetching sensor data: " + e.getMessage());
+        //}
     }
 }
 
