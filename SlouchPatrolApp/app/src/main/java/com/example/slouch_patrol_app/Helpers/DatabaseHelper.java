@@ -1,5 +1,6 @@
 package com.example.slouch_patrol_app.Helpers;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -45,8 +46,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Create User Table
         String createUserTable = "CREATE TABLE " + USER_TABLE + "(" +
                 COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                COLUMN_USERNAME + " TEXT," +
-                COLUMN_PASSWORD + " TEXT)";
+                COLUMN_USERNAME + " TEXT NOT NULL," +
+                COLUMN_PASSWORD + " TEXT NOT NULL)";
         db.execSQL(createUserTable);
 
         // Create Posture Score Table
@@ -67,17 +68,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean insertUser(String username, String password) {
+        if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
+            return false; // Return false if inputs are invalid
+        }
+
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_USERNAME, username);
         contentValues.put(COLUMN_PASSWORD, password);
 
-        //Insert the new user into the database
         long result = db.insert(USER_TABLE, null, contentValues);
-
-        //Check if insert was successful (result is -1 if there was an error)
         return result != -1;
     }
+
 
     public boolean verifyUser(String username, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -106,6 +109,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
+    public boolean addPostureScoreForCurrentUser(String username, float score, String timestamp) {
+        // Get the current user ID using the username
+        int userId = getUserIdByUsername(username);
+
+        // If the user is found (userId is greater than 0), add the posture score
+        if (userId > 0) {
+            return addPostureScore(userId, score, timestamp);
+        } else {
+            return false; // Return false if user is not found
+        }
+    }
+
+
     //Retrieve posture scores for a user
     public Cursor getPostureScores(int userId) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -126,16 +142,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_TIMESTAMP + " DESC");      //Order by the most recent score
     }
 
+    @SuppressLint("Range")
     public Integer getUserIdByUsernameAndPassword(String username, String password) {
-
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT " + COLUMN_USER_ID + " FROM " + USER_TABLE +
                         " WHERE " + COLUMN_USERNAME + "=? AND " + COLUMN_PASSWORD + "=?",
                 new String[]{username, password});
 
         if (cursor != null && cursor.moveToFirst()) {
-            int userId;
-            userId = cursor.getInt(cursor.getColumnIndex(COLUMN_USER_ID));
+
+            int userId = 0;
+            if(cursor.getColumnIndex(COLUMN_USER_ID) > -1)
+            {
+                userId = cursor.getInt(cursor.getColumnIndex(COLUMN_USER_ID));
+            }
+
             cursor.close();
             return userId;
         }
@@ -143,7 +164,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor != null) {
             cursor.close();
         }
-        return null; // User not found or credentials are incorrect
+        return 0; // Return 0 if user is not found or credentials are incorrect
     }
+
+    @SuppressLint("Range")
+    public Integer getUserIdByUsername(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT " + COLUMN_USER_ID + " FROM " + USER_TABLE +
+                        " WHERE " + COLUMN_USERNAME + "=?",
+                new String[]{username});
+
+        if (cursor != null && cursor.moveToFirst()) {
+
+            int userId = 0;
+            if (cursor.getColumnIndex(COLUMN_USER_ID) > -1) {
+                userId = cursor.getInt(cursor.getColumnIndex(COLUMN_USER_ID));
+            }
+
+            cursor.close();
+            return userId;
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+        return 0; // Return 0 if user is not found
+    }
+
+
 
 }

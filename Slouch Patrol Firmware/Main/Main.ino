@@ -170,7 +170,7 @@ void loop() {
           sensor.roll = ypr[2] * RAD_TO_DEG;
 
           // Add to the string that will be delivered
-          AppData += "IMU"+ String(i) + ":" + String(sensor.yaw) + "," + String(sensor.pitch) + "," + String(sensor.roll) + ";" ;
+          AppData += String(sensor.yaw) + "," + String(sensor.pitch) + "," + String(sensor.roll) + ";" ;
 
         }
       }    
