@@ -57,4 +57,5 @@ dependencies {
     androidTestImplementation libs.espresso.core
     implementation libs.unirest.java
     implementation libs.listenablefuture
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.23'
 }
