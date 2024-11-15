@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.slouch_patrol_app.R;
+import pl.droidsonroids.gif.GifImageView;
 
 public class CalibrationFragment extends DialogFragment {
 
@@ -38,6 +39,9 @@ public class CalibrationFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // inflate layout
         View view = inflater.inflate(R.layout.fragment_calibration, container, false);
+
+        GifImageView gifImageView = view.findViewById(R.id.Calibration_Gif);
+        gifImageView.setImageResource(R.drawable.giphy);  // Load GIF from resources
 
         Button calibrateButton = view.findViewById(R.id.calibrateButton);
 
