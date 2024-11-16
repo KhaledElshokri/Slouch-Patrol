@@ -49,6 +49,11 @@
             android:name=".Controller.Activities.MainActivity"
             android:parentActivityName=".Controller.Activities.HomeActivity"
             android:exported="false" />
+        <activity
+            android:name=".Controller.Activities.ChatBotActivity"
+            android:parentActivityName=".Controller.Activities.HomeActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

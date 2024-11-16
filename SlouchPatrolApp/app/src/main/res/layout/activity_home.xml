@@ -41,10 +41,10 @@
 
     <Button
         android:id="@+id/startSessionButton"
-        android:layout_width="214dp"
-        android:layout_height="139dp"
+        android:layout_width="314dp"
+        android:layout_height="108dp"
         android:backgroundTint="@color/primary_color"
-        android:text="@string/start_session"
+        android:text="Start Session 👮"
         android:textColor="@color/background_color"
         android:textSize="34sp"
         android:textStyle="bold"
@@ -78,6 +78,23 @@
             app:cornerRadius="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.063"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/ChatBotButton"
+            android:layout_width="160dp"
+            android:layout_height="60dp"
+            android:backgroundTint="@color/primary_color"
+            android:text="Slouchy 🤖"
+            android:textColor="@color/background_color"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:cornerRadius="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.936"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -91,7 +108,7 @@
         android:layout_marginTop="106dp"
         android:layout_marginEnd="58dp"
         android:layout_marginBottom="435dp"
-        android:text="\t How it works:\n\n \t\t 1. When starting a session you will be asked\n\t\t to get into the position you desire to maintain\n\n\t\t 2. You will be getting a score out of 100 in\n\t\t real-time that evaluates your posture\n\n\t\t 3. When you end your session you will have\n\t\t the chance to save your data to look back at\n\t\t your progress"
+        android:text="📜How it works:\n\n \t\t 1. When starting a session you will be asked\n\t\t to get into the position you desire to maintain\n\n\t\t 2. You will be getting a score out of 100 in\n\t\t real-time that evaluates your posture\n\n\t\t 3. When you end your session you will have\n\t\t the chance to save your data to look back at\n\t\t your progress"
         android:textAlignment="viewStart"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textSize="14sp"
