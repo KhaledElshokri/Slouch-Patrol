@@ -2,9 +2,12 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
-def apikeyPropertiesFile = rootProject.file("apikey.properties")
 def apikeyProperties = new Properties()
-apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+def apikeyPropertiesFile = rootProject.file("apikey.properties")
+if (apikeyPropertiesFile.exists())
+{
+    apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+}
 
 
 android {
@@ -20,6 +23,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "MAILGUN_KEY", "\"${apikeyProperties['MAILGUN_KEY']}\""
+        buildConfigField "String", "OPENAI_KEY", "\"${apikeyProperties['OPENAI_KEY']}\""
         buildConfigField "String", "NONPROD_EMAIL", "\"${apikeyProperties['NONPROD_EMAIL']}\""
     }
 

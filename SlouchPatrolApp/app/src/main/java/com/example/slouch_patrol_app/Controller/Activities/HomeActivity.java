@@ -37,12 +37,14 @@ public class HomeActivity extends AppCompatActivity {
         // Initialize Buttons
         Button buttonStartActivity = findViewById(R.id.startSessionButton);
         Button buttonActivityLog = findViewById(R.id.activityLogButton);
+        Button buttonChatBot = findViewById(R.id.ChatBotButton);
         ImageButton buttonSettings = findViewById(R.id.settingsButton);
 
         // Initialize Button Actions
         buttonStartActivity.setOnClickListener(v -> routeToMain());
         buttonActivityLog.setOnClickListener(v -> routeToActivityLog());
         buttonSettings.setOnClickListener(v -> routeToSettings());
+        buttonChatBot.setOnClickListener(v -> routeToChatBot());
 
     }
 
@@ -68,6 +70,11 @@ public class HomeActivity extends AppCompatActivity {
 
     private void routeToActivityLog() {
         Intent intent = new Intent(HomeActivity.this, DataActivity.class);
+        startActivity(intent);
+    }
+
+    private void routeToChatBot() {
+        Intent intent = new Intent(HomeActivity.this, ChatBotActivity.class);
         startActivity(intent);
     }
 }
