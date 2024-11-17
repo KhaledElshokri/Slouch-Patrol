@@ -33,6 +33,7 @@ import org.json.JSONArray;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -77,7 +78,9 @@ public class ChatBotActivity extends AppCompatActivity {
         chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         chatRecyclerView.setAdapter(chatAdapter);
 
-        messageList.add(new Message("Hello! I am Slouchy, Here to help you stop slouching!",false));
+        inputMessage.setHint("Enter your question here");
+
+        messageList.add(new Message("Hello!\n\n I am Slouchy, Here to help you stop slouching!",false));
 
         // Handle send button click
         sendButton.setOnClickListener(new View.OnClickListener() {
@@ -91,6 +94,7 @@ public class ChatBotActivity extends AppCompatActivity {
                     chatRecyclerView.scrollToPosition(messageList.size() - 1);
 
                     inputMessage.setText(""); // Clear input
+                    inputMessage.setHint("Enter your question here");
 
                     // Send message to Gemini API
                     sendMessageToOpenAI(userMessage);
@@ -118,7 +122,8 @@ public class ChatBotActivity extends AppCompatActivity {
         // Create the request payload
         JSONObject requestBody = new JSONObject();
         try {
-            requestBody.put("model", "gpt-3.5-turbo"); // Specify the model
+            // Define the required fields
+            requestBody.put("model", "gpt-3.5-turbo");
             requestBody.put("messages", new JSONArray()
                     .put(new JSONObject()
                             .put("role", "system")
@@ -126,13 +131,21 @@ public class ChatBotActivity extends AppCompatActivity {
                     .put(new JSONObject()
                             .put("role", "user")
                             .put("content", message)));
+
+            // Optional fields for customization
+            requestBody.put("temperature", 0.7); // Adjust randomness (0.0 deterministic, 2.0 very random)
+            requestBody.put("top_p", 1); // Nucleus sampling
+            requestBody.put("n", 1); // Number of responses
+            requestBody.put("max_completion_tokens", 300); // Maximum tokens for the response
+            requestBody.put("frequency_penalty", 0.0); // Penalize repeated phrases
+            requestBody.put("presence_penalty", 0.0); // Encourage new topics
         } catch (JSONException e) {
             e.printStackTrace();
             Toast.makeText(this, "Error creating request payload", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Define the MediaType for JSON
+        // Define MediaType for JSON
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
         // Create the HTTP client and request
@@ -141,7 +154,7 @@ public class ChatBotActivity extends AppCompatActivity {
         Request request = new Request.Builder()
                 .url(apiUrl)
                 .post(body)
-                .addHeader("Authorization", "Bearer " + openAI_key) // Replace with your API key
+                .addHeader("Authorization", "Bearer " + openAI_key) // Replace with your actual API key
                 .addHeader("Content-Type", "application/json")
                 .build();
 
@@ -149,8 +162,8 @@ public class ChatBotActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-                runOnUiThread(() -> Toast.makeText(ChatBotActivity.this, "BIG Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                Log.e("OpenAI API Error", "Request failed: " + e.getMessage());
+                runOnUiThread(() -> Toast.makeText(ChatBotActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
             }
 
             @Override
@@ -170,16 +183,19 @@ public class ChatBotActivity extends AppCompatActivity {
                             chatRecyclerView.scrollToPosition(messageList.size() - 1);
                         });
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.e("OpenAI API Error", "JSON parsing error: " + e.getMessage());
                         runOnUiThread(() -> Toast.makeText(ChatBotActivity.this, "Error parsing response", Toast.LENGTH_SHORT).show());
                     }
                 } else {
-                    Log.e("API Error", "Error Code: " + response.code() + " Message: " + response.message());
-                    runOnUiThread(() -> Toast.makeText(ChatBotActivity.this, "API Error: " + response.message(), Toast.LENGTH_SHORT).show());
+                    // Log detailed API error information
+                    String errorBody = response.body() != null ? response.body().string() : "No error body";
+                    Log.e("OpenAI API Error", "Code: " + response.code() + ", Message: " + response.message() + ", Body: " + errorBody);
+                    runOnUiThread(() -> Toast.makeText(ChatBotActivity.this, "API Error: " + response.message(), Toast.LENGTH_LONG).show());
                 }
             }
         });
     }
+
 
 
 }
