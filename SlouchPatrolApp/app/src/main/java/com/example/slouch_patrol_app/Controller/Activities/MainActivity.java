@@ -2,7 +2,6 @@ package com.example.slouch_patrol_app.Controller.Activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -173,7 +172,7 @@ public class MainActivity
         if (userCursor != null && userCursor.moveToFirst()) {
             int userId = userCursor.getInt(userCursor.getColumnIndexOrThrow(DatabaseHelper.getUserIdColumn()));
 
-            Cursor scoreCursor = databaseHelper.getPostureScoresByUserId(userId);
+            Cursor scoreCursor = databaseHelper.getPostureScoresByUserIDCursor(userId);
 
             if (scoreCursor != null && scoreCursor.moveToFirst()) {
                 int scoreColumnIndex = scoreCursor.getColumnIndex("score");
