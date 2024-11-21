@@ -11,8 +11,8 @@ public class PostureCalculator {
     private SensorDataFetcher sensorDataFetcher;
     private DatabaseHelper databaseHelper;
 
-    private static final int CENTER_SPINE = 0;   // Firmware IMU 1
-    private static final int LEFT_SHOULDER = 1;  // Firmware IMU 2
+    private static final int CENTER_SPINE = 1;   // Firmware IMU 1
+    private static final int LEFT_SHOULDER = 3;  // Firmware IMU 2
     private static final int RIGHT_SHOULDER = 2; // Firmware IMU 3
 
 
