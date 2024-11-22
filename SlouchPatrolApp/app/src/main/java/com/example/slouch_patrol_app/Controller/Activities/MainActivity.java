@@ -45,7 +45,7 @@ public class MainActivity
     // SENSOR OBJECTS
     private SensorDataFetcher dataFetcher = new SensorDataFetcher();
     private final Handler handler = new Handler();
-    private static final int FETCH_INTERVAL_MS = 500; // Fetch data every 0.5 seconds
+    private static final int FETCH_INTERVAL_MS = 200; // Fetch data every 0.5 seconds
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
