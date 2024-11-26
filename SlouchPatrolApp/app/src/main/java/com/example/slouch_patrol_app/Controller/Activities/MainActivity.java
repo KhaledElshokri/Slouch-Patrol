@@ -133,21 +133,23 @@ public class MainActivity
                 // Get required information to be saved in activity table
                 String username = getCurrentUser();
                 userID = databaseHelper.getUserIdByUsername(username);
-                int[] postureScores = databaseHelper.getPostureScoresByUserID(userID);
-
-                // Calculate average score & runtime
-                int averageScore = databaseHelper.getAverageScore(userID);
-                String runtime = databaseHelper.getRuntimeFromPTable(userID);
-                String date = databaseHelper.getDateFromPTable(userID);
-
-                if (runtime == null) {
+                int[] postureScores;
+                int averageScore;
+                String runtime;
+                String date;
+                try {
+                    postureScores = databaseHelper.getPostureScoresByUserID(userID);
+                    averageScore = databaseHelper.getAverageScore(userID);
+                    runtime = databaseHelper.getRuntimeFromPTable(userID);
+                    date = databaseHelper.getDateFromPTable(userID);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    postureScores = new int[0];
+                    averageScore = 0;
                     runtime = "00:00:00";
                     date = "00/00/0000";
                 }
-                if (postureScores == null) {
-                    postureScores = new int[0];
-                    averageScore = 0;
-                }
+
                 // serialize data to be saved in activity table
                 SessionData sessionData = new SessionData(sessionType, sessionName, sessionNotes, postureScores);
                 Gson gson = new Gson();
@@ -189,9 +191,17 @@ public class MainActivity
         // Start stopped fragment
         StopSessionFragment stopSessionFragment = new StopSessionFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt("userID", userID);
-        bundle.putInt("avgScore", databaseHelper.getAverageScore(userID));
-        bundle.putString("runtime", databaseHelper.getRuntimeFromPTable(userID));
+        try {
+            bundle.putInt("userID", userID);
+            bundle.putInt("avgScore", databaseHelper.getAverageScore(userID));
+            bundle.putString("runtime", databaseHelper.getRuntimeFromPTable(userID));
+        } catch (Exception e) {
+            e.printStackTrace();
+            bundle.putInt("userID", userID);
+            bundle.putInt("avgScore", 0);
+            bundle.putString("runtime", "00:00:00");
+        }
+
         stopSessionFragment.setArguments(bundle);
 
         stopSessionFragment.show(getSupportFragmentManager(), "fragment_stopped");
@@ -312,11 +322,13 @@ public class MainActivity
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         // Check if the "loggedIn" flag is true
-        boolean isLoggedIn = sharedPreferences.getBoolean("loggedIn", false);
+        boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
 
         if (isLoggedIn) {
+            Log.d("MainActivity", "User is logged in");
             return sharedPreferences.getString("username", null);  // Return username if logged in
         } else {
+            Log.d("MainActivity", "User not logged in");
             return null;  // Return null if not logged in
         }
     }

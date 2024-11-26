@@ -6,17 +6,19 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.slouch_patrol_app.Model.LoggedActivity;
 import com.example.slouch_patrol_app.Model.SessionData;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "slouchpatrol.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // User Table
     private static final String USER_TABLE = "users";
@@ -272,9 +274,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         for (int score : postureScores) {
             sum += score;
         }
-        if (postureScores.length == 0) {
-            return 0;
-        }
         return sum / postureScores.length;
     }
 
@@ -382,10 +381,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void clearPostureTable() {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DROP TABLE IF EXISTS " + POSTURE_TABLE);
-        onCreate(db);
+
+        db.beginTransaction();
+        try{
+            db.execSQL("DROP TABLE IF EXISTS " + POSTURE_TABLE);
+            createPostureTable(db);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+        db.close();
     }
 
+    private void createPostureTable(SQLiteDatabase db) {
+        // Re-Create Posture Score Table
+        String createPostureTable = "CREATE TABLE " + POSTURE_TABLE + "(" +
+                COLUMN_POSTURE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                COLUMN_USER_ID_FK + " INTEGER," +
+                COLUMN_SCORE + " REAL," +
+                COLUMN_TIMESTAMP + " TEXT," +
+                "FOREIGN KEY(" + COLUMN_USER_ID_FK + ") REFERENCES " + USER_TABLE + "(" + COLUMN_USER_ID + "))";
+        db.execSQL(createPostureTable);
+    }
 
 
 }

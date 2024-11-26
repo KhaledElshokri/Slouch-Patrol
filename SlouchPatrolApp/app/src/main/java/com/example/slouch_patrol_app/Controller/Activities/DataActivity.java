@@ -71,7 +71,7 @@ public class DataActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         // Check if the "loggedIn" flag is true
-        boolean isLoggedIn = sharedPreferences.getBoolean("loggedIn", false);
+        boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
 
         if (isLoggedIn) {
             return sharedPreferences.getString("username", null);  // Return username if logged in
