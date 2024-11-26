@@ -7,9 +7,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 
+import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,14 +20,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
 
 import com.example.slouch_patrol_app.Controller.Fragments.*;
 import com.example.slouch_patrol_app.Features.PostureCalculator;
 import com.example.slouch_patrol_app.Helpers.*;
+import com.example.slouch_patrol_app.Model.SessionData;
 import com.example.slouch_patrol_app.R;
+import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.Random;
 
 public class MainActivity
         extends AppCompatActivity
@@ -39,6 +46,8 @@ public class MainActivity
     private DatabaseHelper databaseHelper;
     private SharedPreferencesHelper sharedPreferencesHelper;
     private PostureCalculator postureCalculator;
+
+    private int userID;
 
     // SENSOR OBJECTS
     private SensorDataFetcher dataFetcher = new SensorDataFetcher();
@@ -60,7 +69,7 @@ public class MainActivity
         sharedPreferencesHelper = new SharedPreferencesHelper(this);
         postureCalculator = new PostureCalculator(dataFetcher,databaseHelper);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String username = sharedPreferences.getString("username", null);
+        // String username = sharedPreferences.getString("username", null);
 
         // Initialize Button + Score Display
         ImageButton stopButton = findViewById(R.id.stop_button);
@@ -104,26 +113,56 @@ public class MainActivity
     }
 
     @Override
-    public void onSaveFragmentEvent(String event) {
-        if (event.equals("discard")) {
-            // TODO: DISCARD SESSION
-            //       clear relevant DB data
-            //       return to main activity
-            Toast.makeText(this, "Session discarded", Toast.LENGTH_SHORT).show();
-            // go back to home activity
-            routeToHome();
-        } else if (event.equals("resume")) {
-            // TODO: DISPLAY SCORE
-            //       APP IS RUNNING -> DISPLAY SCORE
-            startFetchingSensorData();
-        } else { // if (event.equals("save")) -- note: default is to save if something goes wrong
-            // TODO: SAVE SESSION
-            //       Name, type, notes (if any)
-            //       into the activity log db
-            //       then return to main activity
-            Toast.makeText(this, "Session saved", Toast.LENGTH_SHORT).show();
-            // back to home activity
-            routeToHome();
+    public void onSaveFragmentEvent(String event, String sessionName, String sessionNotes, String sessionType) {
+        switch (event) {
+            case "discard":
+                // TODO: DISCARD SESSION
+                //       clear relevant DB data
+                //       return to main activity
+                Toast.makeText(this, "Session discarded", Toast.LENGTH_SHORT).show();
+                databaseHelper.clearPostureTable();
+                // go back to home activity
+                routeToHome();
+                break;
+            case "resume":
+                // TODO: DISPLAY SCORE
+                //       APP IS RUNNING -> DISPLAY SCORE
+                startFetchingSensorData();
+                break;
+            case "save":  // if (event.equals("save"))
+                // Get required information to be saved in activity table
+                String username = getCurrentUser();
+                userID = databaseHelper.getUserIdByUsername(username);
+                int[] postureScores = databaseHelper.getPostureScoresByUserID(userID);
+
+                // Calculate average score & runtime
+                int averageScore = databaseHelper.getAverageScore(userID);
+                String runtime = databaseHelper.getRuntimeFromPTable(userID);
+                String date = databaseHelper.getDateFromPTable(userID);
+
+                if (runtime == null) {
+                    runtime = "00:00:00";
+                    date = "00/00/0000";
+                }
+                if (postureScores == null) {
+                    postureScores = new int[0];
+                    averageScore = 0;
+                }
+                // serialize data to be saved in activity table
+                SessionData sessionData = new SessionData(sessionType, sessionName, sessionNotes, postureScores);
+                Gson gson = new Gson();
+                String sessionDataJSON = gson.toJson(sessionData);
+                assert sessionDataJSON!=null;
+                // save to database
+                boolean success = databaseHelper.insertActivity(userID, sessionDataJSON, averageScore, runtime, date);
+                if (success) {
+                    Toast.makeText(this, "Session saved to activity log", Toast.LENGTH_SHORT).show();
+                    databaseHelper.clearPostureTable();
+                } else {
+                    Toast.makeText(this, "Error saving session to activity log", Toast.LENGTH_SHORT).show();
+                }
+                routeToHome();
+                break;
         }
     }
 
@@ -133,7 +172,7 @@ public class MainActivity
             startFetchingSensorData();
         } else if (event.equals("recalibrate")) {
             startCalibrationFragment();
-        } else {
+        } else if (event.equals("finish")){
             // LET USER SAVE SESSION
             startSaveSessionFragment();
         }
@@ -145,7 +184,16 @@ public class MainActivity
     }
 
     private void startStoppedFragment() {
+        // Stop fetching sensor data
+        handler.removeCallbacks(fetchSensorDataRunnable);
+        // Start stopped fragment
         StopSessionFragment stopSessionFragment = new StopSessionFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt("userID", userID);
+        bundle.putInt("avgScore", databaseHelper.getAverageScore(userID));
+        bundle.putString("runtime", databaseHelper.getRuntimeFromPTable(userID));
+        stopSessionFragment.setArguments(bundle);
+
         stopSessionFragment.show(getSupportFragmentManager(), "fragment_stopped");
     }
 
@@ -163,7 +211,7 @@ public class MainActivity
 
     /// SCORE DISPLAY RELATED METHODS
 
-    private void displayUserScore(String username) {
+    /*private void displayUserScore(String username) {
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
         Cursor userCursor = db.rawQuery(
                 "SELECT " + DatabaseHelper.getUserIdColumn() + " FROM " + DatabaseHelper.getUserTable() + " WHERE " + DatabaseHelper.getUsernameColumn() + " = ?",
@@ -195,7 +243,7 @@ public class MainActivity
         if (userCursor != null) {
             userCursor.close();
         }
-    }
+    }*/
 
     private void startFetchingSensorData() {
         handler.post(fetchSensorDataRunnable); // Start the periodic fetching
@@ -228,10 +276,10 @@ public class MainActivity
                 runOnUiThread(() -> {
                     textViewScore.setText(String.valueOf(postureScore));
                 });
-            } catch (IOException e) {
+            } /*catch (IOException e) {
                 e.printStackTrace();
                 runOnUiThread(() -> textViewScore.setText("Error fetching data"));
-            } catch (Exception e) {
+            }*/ catch (Exception e) {
                 e.printStackTrace();
                 runOnUiThread(() -> textViewScore.setText("Unexpected error occurred: " + e.getMessage()));
             }
@@ -239,7 +287,7 @@ public class MainActivity
     }
 
 
-    // TODO: TEST THIS
+    /*
     private int setBackgroundColor(int score) {
         View view = this.getWindow().getDecorView();
 
@@ -258,7 +306,7 @@ public class MainActivity
         } else {
             return 0xB30231; // red
         }
-    }
+    }*/
 
     public String getCurrentUser() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -272,5 +320,4 @@ public class MainActivity
             return null;  // Return null if not logged in
         }
     }
-
 }

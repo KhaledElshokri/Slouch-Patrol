@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.PreferenceManager;
 
+import com.example.slouch_patrol_app.Controller.Activities.DataActivity;
 import com.example.slouch_patrol_app.Helpers.DatabaseHelper;
 import com.example.slouch_patrol_app.Helpers.SharedPreferencesHelper;
 import com.example.slouch_patrol_app.Model.SessionData;
@@ -26,14 +27,12 @@ import com.google.gson.Gson;
 public class SaveSessionFragment extends DialogFragment {
 
     public interface onSaveFragmentEventListener {
-        void onSaveFragmentEvent(String event);
+        void onSaveFragmentEvent(String event, String sessionName, String sessionNotes, String sessionType);
     }
 
     private onSaveFragmentEventListener saveFragmentEventListener;
     private EditText name, notes;
     private Spinner sessionTypeSpinner;
-    private DatabaseHelper databaseHelper;
-    private SharedPreferencesHelper sharedPreferencesHelper;
 
     public SaveSessionFragment() {}
 
@@ -44,7 +43,7 @@ public class SaveSessionFragment extends DialogFragment {
         try {
             saveFragmentEventListener = (onSaveFragmentEventListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement onEventListener");
+            throw new ClassCastException(context + " must implement onEventListener");
         }
     }
 
@@ -53,10 +52,6 @@ public class SaveSessionFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // inflate layout
         View view = inflater.inflate(R.layout.fragment_save_session, container, false);
-
-        // initialize helpers
-        databaseHelper = new DatabaseHelper(getActivity());
-        sharedPreferencesHelper = new SharedPreferencesHelper(getActivity());
 
         // get buttons
         Button resumeButton = view.findViewById(R.id.resumeButton);
@@ -103,29 +98,17 @@ public class SaveSessionFragment extends DialogFragment {
     private void onSaveFragmentEvent(String event) {
 
         if (event.equals("save")) {
-            // Get required information to be saved in activity table
-            String username = getCurrentUser();
-            int userID = databaseHelper.getUserIdByUsername(username);
-            String sessionType = sessionTypeSpinner.getSelectedItem().toString();
+            // extract editable fields
             String sessionName = name.getText().toString();
             String sessionNotes = notes.getText().toString();
-            int[] postureScores = databaseHelper.getPostureScoresByUserID(userID);
+            String sessionType = sessionTypeSpinner.getSelectedItem().toString();
 
-            // serialize data to be saved in activity table
-            SessionData sessionData = new SessionData(sessionType, sessionName, sessionNotes, postureScores);
-            Gson gson = new Gson();
-            String sessionDataJSON = gson.toJson(sessionData);
-
-            // save to database
-            boolean success = databaseHelper.insertActivity(userID, sessionDataJSON);
-            if (success) {
-                Toast.makeText(getActivity(), "Session saved to activity log", Toast.LENGTH_SHORT).show();
+            // callback to main activity
+            if (saveFragmentEventListener!=null) {
+                saveFragmentEventListener.onSaveFragmentEvent(event, sessionName, sessionNotes, sessionType);
             }
         }
-
-        if (saveFragmentEventListener!=null) {
-            saveFragmentEventListener.onSaveFragmentEvent(event);
-        }
+        // end fragment
         dismiss();
     }
 

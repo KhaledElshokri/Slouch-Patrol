@@ -2,10 +2,10 @@ package com.example.slouch_patrol_app.Model;
 
 public class SessionData {
 
-    private String sessionType;
-    private String sessionName;
-    private String sessionNotes;
-    private int[] postureScores;
+    private final String sessionType;
+    private final String sessionName;
+    private final String sessionNotes;
+    private final int[] postureScores;
 
     public SessionData(
             String sessionType,
