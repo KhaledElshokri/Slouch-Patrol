@@ -108,6 +108,12 @@ public class SaveSessionFragment extends DialogFragment {
                 saveFragmentEventListener.onSaveFragmentEvent(event, sessionName, sessionNotes, sessionType);
             }
         }
+        else if (event.equals("discard")) {
+            // callback to main activity
+            if (saveFragmentEventListener != null) {
+                saveFragmentEventListener.onSaveFragmentEvent(event, null, null, null);
+            }
+        }
         // end fragment
         dismiss();
     }

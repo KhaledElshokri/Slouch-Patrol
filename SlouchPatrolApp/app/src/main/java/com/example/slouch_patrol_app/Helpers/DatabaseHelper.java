@@ -389,6 +389,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
+            Log.d("DatabaseHelper", "Posture table cleared");
         }
         db.close();
     }
