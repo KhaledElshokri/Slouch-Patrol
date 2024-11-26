@@ -53,11 +53,12 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:background="@drawable/edit_text_shape"
-            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 "
             android:hint="@string/name"
             android:importantForAutofill="no"
             android:inputType="text"
             android:maxLength="20"
+            android:textColor="@color/background_color"
             android:textColorHint="@color/background_color" />
 
         <Spinner
@@ -80,7 +81,7 @@
             android:layout_below="@id/activityTypeSpinner"
             android:layout_margin="20dp"
             android:background="@drawable/edit_text_shape"
-            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 "
             android:gravity="top"
             android:hint="@string/notes"
             android:importantForAutofill="no"

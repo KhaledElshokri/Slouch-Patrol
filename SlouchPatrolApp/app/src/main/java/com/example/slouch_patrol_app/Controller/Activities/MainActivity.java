@@ -2,7 +2,6 @@ package com.example.slouch_patrol_app.Controller.Activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -10,6 +9,7 @@ import android.os.Handler;
 
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,11 +40,12 @@ public class MainActivity
     private DatabaseHelper databaseHelper;
     private SharedPreferencesHelper sharedPreferencesHelper;
     private PostureCalculator postureCalculator;
+    private ImageView officerState;
 
     // SENSOR OBJECTS
     private SensorDataFetcher dataFetcher = new SensorDataFetcher();
     private final Handler handler = new Handler();
-    private static final int FETCH_INTERVAL_MS = 500; // Fetch data every 0.5 seconds
+    private static final int FETCH_INTERVAL_MS = 200; // Fetch data every 0.5 seconds
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +66,8 @@ public class MainActivity
 
         // Initialize Button + Score Display
         ImageButton stopButton = findViewById(R.id.stop_button);
+        officerState = findViewById(R.id.Officer_Image);
+        officerState.setImageResource(R.drawable.happy_officer);
         textViewScore = findViewById(R.id.textViewScore);
         relativeLayout = findViewById(R.id.relativeLayoutFields);
 
@@ -173,7 +176,7 @@ public class MainActivity
         if (userCursor != null && userCursor.moveToFirst()) {
             int userId = userCursor.getInt(userCursor.getColumnIndexOrThrow(DatabaseHelper.getUserIdColumn()));
 
-            Cursor scoreCursor = databaseHelper.getPostureScoresByUserId(userId);
+            Cursor scoreCursor = databaseHelper.getPostureScoresByUserIDCursor(userId);
 
             if (scoreCursor != null && scoreCursor.moveToFirst()) {
                 int scoreColumnIndex = scoreCursor.getColumnIndex("score");
@@ -224,6 +227,19 @@ public class MainActivity
                 if(username != null)
                 {
                     databaseHelper.addPostureScoreForCurrentUser(username, postureScore, String.valueOf(System.currentTimeMillis()));
+                }
+
+                if(postureScore > 75)
+                {
+                    officerState.setImageResource(R.drawable.happy_officer);
+                }
+                else if(postureScore > 50)
+                {
+                    officerState.setImageResource(R.drawable.mad_officer);
+                }
+                else
+                {
+                    officerState.setImageResource(R.drawable.extreme_officer);
                 }
 
                 runOnUiThread(() -> {

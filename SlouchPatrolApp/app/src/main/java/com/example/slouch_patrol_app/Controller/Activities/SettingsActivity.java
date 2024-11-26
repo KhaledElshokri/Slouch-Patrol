@@ -28,9 +28,7 @@ public class SettingsActivity extends AppCompatActivity {
     private SharedPreferencesHelper sharedPreferencesHelper;
     private DeviceSettings deviceSettings;
     private EditText deviceNameTextView;
-    private TextView lastInitializedTextView;
     private CheckBox notifSettingsCheckBox;
-    private Button initializeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,15 +56,8 @@ public class SettingsActivity extends AppCompatActivity {
 
         // Initialize Dynamic UI Elements
         deviceNameTextView = findViewById(R.id.editDeviceName);
-        lastInitializedTextView = findViewById(R.id.lastInitialized);
         notifSettingsCheckBox = findViewById(R.id.notifCheckbox);
-        initializeButton = findViewById(R.id.buttonInitialize);
 
-        // Set Up Button Click Listener
-        initializeButton.setOnClickListener(new View.OnClickListener() {
-            // Trigger Initialize on Click
-            public void onClick(View v) { onClickInitialize(sharedPreferencesHelper); }
-        });
     }
 
     //allow toolbar to route back to parent activity
@@ -113,8 +104,6 @@ public class SettingsActivity extends AppCompatActivity {
             deviceSettings.setConnectionStatus("CONNECTED");
             sharedPreferencesHelper.saveDeviceSettings(deviceSettings);
 
-            lastInitializedTextView.setText(deviceSettings.getLastInitialized());
-
             // Init the Device -> Calibration, etc.
             // TODO: Implement fragment to allow user to calibrate device + redirect to main activity
         }
@@ -129,10 +118,6 @@ public class SettingsActivity extends AppCompatActivity {
         if (deviceSettings.getDeviceName()!=null){
             // Set Device Name
             deviceNameTextView.setText(deviceSettings.getDeviceName());
-        }
-        if (deviceSettings.getLastInitialized()!=null){
-            // Set Last Initialized
-            lastInitializedTextView.setText(deviceSettings.getLastInitialized());
         }
         if (deviceSettings.isPushNotifications()){
             // Set Notif Settings

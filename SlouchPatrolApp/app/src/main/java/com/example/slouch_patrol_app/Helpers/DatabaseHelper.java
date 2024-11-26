@@ -25,6 +25,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_SCORE = "score";
     private static final String COLUMN_TIMESTAMP = "timestamp";
 
+    // Activity Log Table
+    private static final String ACTIVITY_LOG_TABLE = "activity_log";
+    private static final String COLUMN_ACTIVITY_ID = "activity_id";
+    private static final String COLUMN_USER_ID_FK_ACTIVITY = "user_id_fk_activity";  // Foreign key from user table
+    private static final String COLUMN_SERIALIZED_ACTIVITY = "serialized_activity";
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -58,12 +64,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_TIMESTAMP + " TEXT," +
                 "FOREIGN KEY(" + COLUMN_USER_ID_FK + ") REFERENCES " + USER_TABLE + "(" + COLUMN_USER_ID + "))";
         db.execSQL(createPostureTable);
+
+        // Create Activity Log Table
+        String createActivityLogTable = "CREATE TABLE " + ACTIVITY_LOG_TABLE + "(" +
+                COLUMN_ACTIVITY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                COLUMN_USER_ID_FK_ACTIVITY + " INTEGER," +
+                COLUMN_SERIALIZED_ACTIVITY + " TEXT," +
+                "FOREIGN KEY(" + COLUMN_USER_ID_FK_ACTIVITY + ") REFERENCES " + USER_TABLE + "(" + COLUMN_USER_ID + "))";
+        db.execSQL(createActivityLogTable);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + POSTURE_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + ACTIVITY_LOG_TABLE);
         onCreate(db);
     }
 
@@ -98,10 +113,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Add posture score
-    public boolean addPostureScore(int userId, float score, String timestamp) {
+    public boolean addPostureScore(int userID, float score, String timestamp) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_USER_ID_FK, userId);
+        contentValues.put(COLUMN_USER_ID_FK, userID);
         contentValues.put(COLUMN_SCORE, score);
         contentValues.put(COLUMN_TIMESTAMP, timestamp);
 
@@ -111,11 +126,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean addPostureScoreForCurrentUser(String username, float score, String timestamp) {
         // Get the current user ID using the username
-        int userId = getUserIdByUsername(username);
+        int userID = getUserIdByUsername(username);
 
-        // If the user is found (userId is greater than 0), add the posture score
-        if (userId > 0) {
-            return addPostureScore(userId, score, timestamp);
+        // If the user is found (userID is greater than 0), add the posture score
+        if (userID > 0) {
+            return addPostureScore(userID, score, timestamp);
         } else {
             return false; // Return false if user is not found
         }
@@ -123,23 +138,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     //Retrieve posture scores for a user
-    public Cursor getPostureScores(int userId) {
+    public Cursor getPostureScores(int userID) {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.query(POSTURE_TABLE, null, COLUMN_USER_ID_FK + "=?",
-                new String[]{String.valueOf(userId)}, null, null, COLUMN_TIMESTAMP + " DESC");
+                new String[]{String.valueOf(userID)}, null, null, COLUMN_TIMESTAMP + " DESC");
     }
 
     //Retrieve posture scores for a specific user by username
-    public Cursor getPostureScoresByUserId(int userId) {
+    public Cursor getPostureScoresByUserIDCursor(int userID) {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.query(
                 POSTURE_TABLE,                    //The table to query
                 null,                             //The columns to return (null means all columns)
                 COLUMN_USER_ID_FK + " = ?",       //The WHERE clause to filter by user_id_fk
-                new String[]{String.valueOf(userId)},  //The actual value for the WHERE clause
+                new String[]{String.valueOf(userID)},  //The actual value for the WHERE clause
                 null,                             //Don't group the rows
                 null,                             //Don't filter by row groups
                 COLUMN_TIMESTAMP + " DESC");      //Order by the most recent score
+    }
+
+    public int[] getPostureScoresByUserID(int userID) {
+        // Get query cursor
+        Cursor cursor = getPostureScoresByUserIDCursor(userID);
+
+        // init array of scores
+        int[] postureScores = new int[cursor.getCount()];
+
+        // populate array
+        for (int i = 0; i < postureScores.length; i++) {
+            postureScores[i++] = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SCORE));
+        }
+
+        // return values
+        return postureScores;
     }
 
     @SuppressLint("Range")
@@ -151,14 +182,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (cursor != null && cursor.moveToFirst()) {
 
-            int userId = 0;
+            int userID = 0;
             if(cursor.getColumnIndex(COLUMN_USER_ID) > -1)
             {
-                userId = cursor.getInt(cursor.getColumnIndex(COLUMN_USER_ID));
+                userID = cursor.getInt(cursor.getColumnIndex(COLUMN_USER_ID));
             }
 
             cursor.close();
-            return userId;
+            return userID;
         }
 
         if (cursor != null) {
@@ -176,19 +207,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (cursor != null && cursor.moveToFirst()) {
 
-            int userId = 0;
+            int userID = 0;
             if (cursor.getColumnIndex(COLUMN_USER_ID) > -1) {
-                userId = cursor.getInt(cursor.getColumnIndex(COLUMN_USER_ID));
+                userID = cursor.getInt(cursor.getColumnIndex(COLUMN_USER_ID));
             }
 
             cursor.close();
-            return userId;
+            return userID;
         }
 
         if (cursor != null) {
             cursor.close();
         }
         return 0; // Return 0 if user is not found
+    }
+
+   /* public boolean insertUser(String username, String password) {
+        if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
+            return false; // Return false if inputs are invalid
+        }
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_USERNAME, username);
+        contentValues.put(COLUMN_PASSWORD, password);
+
+        long result = db.insert(USER_TABLE, null, contentValues);
+        return result != -1;
+    }
+*/
+
+    public boolean insertActivity(int userID, String sessionDataJSON) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_USER_ID_FK_ACTIVITY, userID);
+        contentValues.put(COLUMN_SERIALIZED_ACTIVITY, sessionDataJSON);
+
+        long result = db.insert(ACTIVITY_LOG_TABLE, null, contentValues);
+        return result != -1;
     }
 
 
