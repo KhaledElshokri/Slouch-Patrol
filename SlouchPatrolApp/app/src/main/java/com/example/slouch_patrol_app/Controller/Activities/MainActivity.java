@@ -32,6 +32,7 @@ import com.example.slouch_patrol_app.R;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Random;
 
 public class MainActivity
@@ -51,6 +52,8 @@ public class MainActivity
 
     private int userID;
     private String username;
+    private long startTime; // To store entry time
+    private long endTime;   // To store exit time
 
     // SENSOR OBJECTS
     private SensorDataFetcher dataFetcher = new SensorDataFetcher();
@@ -109,6 +112,8 @@ public class MainActivity
         if (isConnected) {
             //TODO: DISPLAY SCORE
             // APP IS RUNNING -> DISPLAY SCORE
+            // Timer should start here
+            startTime = System.currentTimeMillis();
             startFetchingSensorData();
         } else {
             Toast.makeText(this, "Device Unable to be Calibrated", Toast.LENGTH_SHORT).show();
@@ -135,6 +140,7 @@ public class MainActivity
             case "resume":
                 // TODO: DISPLAY SCORE
                 //       APP IS RUNNING -> DISPLAY SCORE
+                startTime = System.currentTimeMillis();
                 startFetchingSensorData();
                 break;
             case "save":  // if (event.equals("save"))
@@ -182,6 +188,7 @@ public class MainActivity
     @Override
     public void onStopFragmentEvent(String event) {
         if (event.equals("resume")) {
+            startTime = System.currentTimeMillis();
             startFetchingSensorData();
         } else if (event.equals("recalibrate")) {
             startCalibrationFragment();
@@ -201,16 +208,27 @@ public class MainActivity
         handler.removeCallbacks(fetchSensorDataRunnable);
         // Start stopped fragment
         StopSessionFragment stopSessionFragment = new StopSessionFragment();
+
+        // Calculate runtime
+        endTime = System.currentTimeMillis();
+        long runtime = endTime - startTime;
+        String formattedRunTime = formatTime(runtime);
+
         Bundle bundle = new Bundle();
         try {
+            // Calculate average score
+            userID = databaseHelper.getUserIdByUsername(username);
+            int averageScore = databaseHelper.getAverageScore(userID);
+
             bundle.putInt("userID", userID);
-            bundle.putInt("avgScore", databaseHelper.getAverageScore(userID));
-            bundle.putString("runtime", databaseHelper.getRuntimeFromPTable(userID));
+            bundle.putInt("avgScore", averageScore);
+            bundle.putString("runtime", formattedRunTime);
         } catch (Exception e) {
             e.printStackTrace();
             bundle.putInt("userID", userID);
             bundle.putInt("avgScore", 0);
             bundle.putString("runtime", "00:00:00");
+            Toast.makeText(this, "NO DATA RECEIVED",Toast.LENGTH_SHORT).show();
         }
 
         stopSessionFragment.setArguments(bundle);
@@ -312,7 +330,7 @@ public class MainActivity
                 runOnUiThread(() -> textViewScore.setText("Error fetching data"));
             }*/ catch (Exception e) {
                 e.printStackTrace();
-                runOnUiThread(() -> textViewScore.setText("Unexpected error occurred: " + e.getMessage()));
+                runOnUiThread(() -> textViewScore.setText("ERROR"));
             }
         }).start();
     }
@@ -352,5 +370,16 @@ public class MainActivity
             Log.d("MainActivity", "User not logged in");
             return null;  // Return null if not logged in
         }
+    }
+
+    private String formatTime(long durationInMillis) {
+        long hours = (durationInMillis / (1000 * 60 * 60)) % 24;
+        long minutes = (durationInMillis / (1000 * 60)) % 60;
+        long seconds = (durationInMillis / 1000) % 60;
+        long milliseconds = durationInMillis % 1000;
+
+        // Format the time into HOUR::MINUTE::SECOND::MILLI
+        return String.format(Locale.getDefault(), "%02d:%02d:%02d.%03d",
+                hours, minutes, seconds, milliseconds);
     }
 }

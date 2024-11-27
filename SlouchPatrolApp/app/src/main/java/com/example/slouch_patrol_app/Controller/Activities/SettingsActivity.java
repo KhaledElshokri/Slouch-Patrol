@@ -41,7 +41,10 @@ public class SettingsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
+
+        toolbar.getNavigationIcon().setTint(getResources().getColor(R.color.background_color, getTheme()));
+        toolbar.setTitleTextColor(getResources().getColor(R.color.background_color, getTheme()));
 
         // Set Up Insets
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.home_activity), (v, insets) -> {

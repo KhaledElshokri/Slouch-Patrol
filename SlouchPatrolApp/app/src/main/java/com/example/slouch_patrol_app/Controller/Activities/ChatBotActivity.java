@@ -64,8 +64,10 @@ public class ChatBotActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
 
+        toolbar.getNavigationIcon().setTint(getResources().getColor(R.color.background_color, getTheme()));
+        toolbar.setTitleTextColor(getResources().getColor(R.color.background_color, getTheme()));
 
         // Initialize UI components
         chatRecyclerView = findViewById(R.id.chatRecyclerView);

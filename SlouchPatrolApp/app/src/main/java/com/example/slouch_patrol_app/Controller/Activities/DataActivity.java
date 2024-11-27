@@ -33,7 +33,7 @@ public class DataActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+        //EdgeToEdge.enable(this);
         setContentView(R.layout.activity_data);
 
         // init db helper
@@ -53,7 +53,10 @@ public class DataActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
+
+        toolbar.getNavigationIcon().setTint(getResources().getColor(R.color.background_color, getTheme()));
+        toolbar.setTitleTextColor(getResources().getColor(R.color.background_color, getTheme()));
 
         //set recycler
         recyclerView = findViewById(R.id.listView);
