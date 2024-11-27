@@ -152,8 +152,11 @@ public class MainActivity
                     averageScore = 0;
                     runtime = "00:00:00";
                     date = "00/00/0000";
+                    Toast.makeText(this, "Error retrieving posture scores", Toast.LENGTH_SHORT).show();
+                    routeToHome();
+                    return;
                 }
-
+                Log.d("MainActivity", "Saving session to activity log");
                 // serialize data to be saved in activity table
                 SessionData sessionData = new SessionData(sessionType, sessionName, sessionNotes, postureScores);
                 Gson gson = new Gson();

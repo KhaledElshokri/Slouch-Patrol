@@ -98,6 +98,10 @@ public class SaveSessionFragment extends DialogFragment {
     private void onSaveFragmentEvent(String event) {
 
         if (event.equals("save")) {
+            if (name.getText().toString().isEmpty()) {
+                Toast.makeText(getActivity(), "Please enter a name", Toast.LENGTH_SHORT).show();
+                return;
+            }
             // extract editable fields
             String sessionName = name.getText().toString();
             String sessionNotes = notes.getText().toString();
