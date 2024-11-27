@@ -68,7 +68,7 @@
             android:layout_below="@id/editTextName"
             android:layout_margin="20dp"
             android:background="@color/background_color"
-            android:backgroundTint="@android:color/system_primary_container_dark"
+            android:backgroundTint="@color/black"
             android:textStyle="bold"
             app:cornerRadius="20dp" />
 

@@ -74,8 +74,8 @@ public class SaveSessionFragment extends DialogFragment {
         String[] sessionTypes = getResources().getStringArray(R.array.session_types);
 
         // set spinner options
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, sessionTypes);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.custom_spinner_item, sessionTypes);
+        adapter.setDropDownViewResource(R.layout.custom_spinner_item); // Optional for dropdown
         this.sessionTypeSpinner.setAdapter(adapter);
 
         return view;
