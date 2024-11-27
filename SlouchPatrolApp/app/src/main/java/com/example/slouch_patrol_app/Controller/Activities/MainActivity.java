@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -46,6 +47,7 @@ public class MainActivity
     private DatabaseHelper databaseHelper;
     private SharedPreferencesHelper sharedPreferencesHelper;
     private PostureCalculator postureCalculator;
+    private ImageView officerState;
 
     private int userID;
     private String username;
@@ -53,7 +55,7 @@ public class MainActivity
     // SENSOR OBJECTS
     private SensorDataFetcher dataFetcher = new SensorDataFetcher();
     private final Handler handler = new Handler();
-    private static final int FETCH_INTERVAL_MS = 500; // Fetch data every 0.5 seconds
+    private static final int FETCH_INTERVAL_MS = 200; // Fetch data every 0.5 seconds
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +79,8 @@ public class MainActivity
 
         // Initialize Button + Score Display
         ImageButton stopButton = findViewById(R.id.stop_button);
+        officerState = findViewById(R.id.Officer_Image);
+        officerState.setImageResource(R.drawable.happy_officer);
         textViewScore = findViewById(R.id.textViewScore);
         relativeLayout = findViewById(R.id.relativeLayoutFields);
 
@@ -285,6 +289,19 @@ public class MainActivity
                 if(username != null)
                 {
                     databaseHelper.addPostureScoreForCurrentUser(username, postureScore, String.valueOf(System.currentTimeMillis()));
+                }
+
+                if(postureScore > 75)
+                {
+                    officerState.setImageResource(R.drawable.happy_officer);
+                }
+                else if(postureScore > 50)
+                {
+                    officerState.setImageResource(R.drawable.mad_officer);
+                }
+                else
+                {
+                    officerState.setImageResource(R.drawable.extreme_officer);
                 }
 
                 runOnUiThread(() -> {
