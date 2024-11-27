@@ -17,12 +17,16 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.slouch_patrol_app.Controller.Fragments.StopSessionFragment;
 import com.example.slouch_patrol_app.Helpers.DatabaseHelper;
 import com.example.slouch_patrol_app.R;
 
 import java.util.List;
 
-public class DataActivity extends AppCompatActivity {
+public class DataActivity
+        extends AppCompatActivity
+        implements
+        StopSessionFragment.onStopFragmentEventListener {
 
     private DatabaseHelper databaseHelper;
     private int userID;
@@ -81,8 +85,6 @@ public class DataActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-
     }
 
     //allow toolbar to route back to parent activity
@@ -107,6 +109,13 @@ public class DataActivity extends AppCompatActivity {
             return sharedPreferences.getString("username", null);  // Return username if logged in
         } else {
             return null;  // Return null if not logged in
+        }
+    }
+
+    @Override
+    public void onStopFragmentEvent(String event) {
+        if (event.equals("delete")) {
+            // delete selected activity
         }
     }
 }

@@ -405,5 +405,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(createPostureTable);
     }
 
+    private int getSessionAverage(int userID) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] averageColumn = {COLUMN_AVERAGE_SCORE};
+        String selection = COLUMN_USER_ID_FK_ACTIVITY + " = ?";
+        String[] selectionArgs = {String.valueOf(userID)};
+
+        Cursor cursor = db.query(ACTIVITY_LOG_TABLE, averageColumn, selection, selectionArgs, null, null, null);
+
+        int averageScore = 0;
+        if (cursor.moveToFirst()) {
+            averageScore = cursor.getInt(0);
+        }
+        return averageScore;
+    }
+
+    //private void deleteActivity()
+
 
 }

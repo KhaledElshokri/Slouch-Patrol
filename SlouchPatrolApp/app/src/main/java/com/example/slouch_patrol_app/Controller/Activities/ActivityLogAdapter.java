@@ -5,8 +5,9 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -45,6 +46,7 @@ public class ActivityLogAdapter extends RecyclerView.Adapter<ActivityLogAdapter.
             String name = jsonObject.optString("sessionName", "Unknown Session"); // Default to "Unknown Session" if not present
                 // TODO: change this from sessionType to timestamp
             String time = jsonObject.optString("sessionType", "Unknown Type"); // Default to "Unknown Type" if not present
+            String data = jsonObject.optString("postureScores", "Unknown Data");
 
             holder.nameTextView.setText(name);
             holder.timeTextView.setText(time);
@@ -52,7 +54,13 @@ public class ActivityLogAdapter extends RecyclerView.Adapter<ActivityLogAdapter.
             // TODO: Add an onClick listener here
                 // not sure if it should be in the try or below it
             holder.itemView.setOnClickListener(v -> {
-                // navigate to the proper graph view
+                Toast.makeText(context, "Session clicked: " + name, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, SessionDataActivity.class);
+                intent.putExtra("logID", position);
+                intent.putExtra("sessionName", name);
+                intent.putExtra("postureScores", data);
+
+                context.startActivity(intent);
             });
 
         } catch (JSONException e) {

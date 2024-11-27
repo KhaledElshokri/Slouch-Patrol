@@ -9,7 +9,6 @@ if (apikeyPropertiesFile.exists())
     apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
 }
 
-
 android {
     namespace 'com.example.slouch_patrol_app'
     compileSdk 34
