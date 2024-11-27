@@ -6,11 +6,19 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import com.example.slouch_patrol_app.Model.LoggedActivity;
+import com.example.slouch_patrol_app.Model.SessionData;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "slouchpatrol.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // User Table
     private static final String USER_TABLE = "users";
@@ -29,6 +37,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String ACTIVITY_LOG_TABLE = "activity_log";
     private static final String COLUMN_ACTIVITY_ID = "activity_id";
     private static final String COLUMN_USER_ID_FK_ACTIVITY = "user_id_fk_activity";  // Foreign key from user table
+    private static final String COLUMN_AVERAGE_SCORE = "average_score";
+    private static final String COLUMN_RUNTIME = "runtime";
+    private static final String COLUMN_DATE = "date";
     private static final String COLUMN_SERIALIZED_ACTIVITY = "serialized_activity";
 
     public DatabaseHelper(Context context) {
@@ -69,6 +80,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String createActivityLogTable = "CREATE TABLE " + ACTIVITY_LOG_TABLE + "(" +
                 COLUMN_ACTIVITY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 COLUMN_USER_ID_FK_ACTIVITY + " INTEGER," +
+                COLUMN_AVERAGE_SCORE + " INTEGER," +
+                COLUMN_RUNTIME + " TEXT," +
+                COLUMN_DATE + " TEXT," +
                 COLUMN_SERIALIZED_ACTIVITY + " TEXT," +
                 "FOREIGN KEY(" + COLUMN_USER_ID_FK_ACTIVITY + ") REFERENCES " + USER_TABLE + "(" + COLUMN_USER_ID + "))";
         db.execSQL(createActivityLogTable);
@@ -147,9 +161,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //Retrieve posture scores for a specific user by username
     public Cursor getPostureScoresByUserIDCursor(int userID) {
         SQLiteDatabase db = this.getReadableDatabase();
+        String[] scoreColumn = {COLUMN_SCORE};
         return db.query(
                 POSTURE_TABLE,                    //The table to query
-                null,                             //The columns to return (null means all columns)
+                scoreColumn,                             //The columns to return (null means all columns)
                 COLUMN_USER_ID_FK + " = ?",       //The WHERE clause to filter by user_id_fk
                 new String[]{String.valueOf(userID)},  //The actual value for the WHERE clause
                 null,                             //Don't group the rows
@@ -163,11 +178,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // init array of scores
         int[] postureScores = new int[cursor.getCount()];
+        int i = 0;
 
         // populate array
-        for (int i = 0; i < postureScores.length; i++) {
+        while(cursor.moveToNext()) {
             postureScores[i++] = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SCORE));
         }
+        cursor.close();
 
         // return values
         return postureScores;
@@ -237,17 +254,156 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 */
 
-    public boolean insertActivity(int userID, String sessionDataJSON) {
+    public boolean insertActivity(int userID, String sessionDataJSON, int averageScore, String runtime, String date) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_USER_ID_FK_ACTIVITY, userID);
         contentValues.put(COLUMN_SERIALIZED_ACTIVITY, sessionDataJSON);
+        contentValues.put(COLUMN_AVERAGE_SCORE, averageScore);
+        contentValues.put(COLUMN_RUNTIME, runtime);
+        contentValues.put(COLUMN_DATE, date);
 
         long result = db.insert(ACTIVITY_LOG_TABLE, null, contentValues);
         return result != -1;
     }
 
+    public int getAverageScore(int userID) {
+        int[] postureScores = getPostureScoresByUserID(userID);
+        int sum = 0;
+        for (int score : postureScores) {
+            sum += score;
+        }
+        return sum / postureScores.length;
+    }
+
+    public String getRuntimeFromPTable(int userID) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // prepare query
+        String[] timestamps = {COLUMN_TIMESTAMP};
+        String selection = COLUMN_USER_ID_FK + " = ?";
+        String[] selectionArgs = {String.valueOf(userID)};
+
+        Cursor cursor = db.query(POSTURE_TABLE, timestamps, selection, selectionArgs, null, null, null);
+        long startTime = 0;
+        long endTime = 0;
+
+        // find start
+        if (cursor.moveToFirst()) {
+            startTime = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP));
+        }
+        // find end
+        if (cursor.moveToLast()) {
+            endTime = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP));
+        }
+        cursor.close();
+
+        if (startTime == 0 || endTime == 0) {
+            return "0"; // empty session
+        }
+
+        // convert to minutes:seconds
+        long duration = endTime - startTime;
+        long totalSeconds = duration / 1000;
+        long minutes = totalSeconds / 60;
+        long seconds = totalSeconds % 60;
+
+        return minutes + "m " + seconds + "s";
+    }
+
+    public List<String> getActivityLogs(int userID) {
+        // init list
+        List<String> serializedActivities = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // prepare query
+        String[] activityColumn = {COLUMN_SERIALIZED_ACTIVITY};
+        String selection = COLUMN_USER_ID_FK_ACTIVITY + " = ?";
+        String[] selectionArgs = {String.valueOf(userID)};
+
+        // execute query
+        Cursor cursor = db.query(ACTIVITY_LOG_TABLE, activityColumn, selection, selectionArgs, null, null, null);
+
+        // populate list
+        while (cursor.moveToNext()) {
+            String serializedActivity = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SERIALIZED_ACTIVITY));
+            serializedActivities.add(serializedActivity);
+        }
+
+        cursor.close();
+        return serializedActivities;
+    }
+
+    public String getDateFromPTable(int userID) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // prepare query
+        String[] timestamps = {COLUMN_TIMESTAMP};
+        String selection = COLUMN_USER_ID_FK + " = ?";
+        String[] selectionArgs = {String.valueOf(userID)};
+
+        Cursor cursor = db.query(POSTURE_TABLE, timestamps, selection, selectionArgs, null, null, null);
+        String startTime = "0";
+
+        if(cursor.moveToFirst()) {
+            startTime = String.valueOf(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP));
+        }
+        cursor.close();
+
+        return startTime;
+
+    }
+
+    public List<LoggedActivity> getAllActivities(int userID) {
+        // init list
+        List<LoggedActivity> loggedActivities = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] activityColumn = {COLUMN_SERIALIZED_ACTIVITY, COLUMN_AVERAGE_SCORE, COLUMN_RUNTIME, COLUMN_DATE};
+        String selection = COLUMN_USER_ID_FK_ACTIVITY + " = ?";
+        String[] selectionArgs = {String.valueOf(userID)};
+
+        Cursor cursor = db.query(ACTIVITY_LOG_TABLE, activityColumn, selection, selectionArgs, null, null, null);
+
+        while(cursor.moveToNext()) {
+            String serializedActivity = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SERIALIZED_ACTIVITY));
+            int averageScore = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_AVERAGE_SCORE));
+            String runtime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RUNTIME));
+            String date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
+
+            LoggedActivity loggedActivity = new LoggedActivity(serializedActivity, averageScore, runtime, date);
+            loggedActivities.add(loggedActivity);
+        }
+        cursor.close();
+        return loggedActivities;
+    }
+
+    public void clearPostureTable() {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.beginTransaction();
+        try{
+            db.execSQL("DROP TABLE IF EXISTS " + POSTURE_TABLE);
+            createPostureTable(db);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+            Log.d("DatabaseHelper", "Posture table cleared");
+        }
+        db.close();
+    }
+
+    private void createPostureTable(SQLiteDatabase db) {
+        // Re-Create Posture Score Table
+        String createPostureTable = "CREATE TABLE " + POSTURE_TABLE + "(" +
+                COLUMN_POSTURE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                COLUMN_USER_ID_FK + " INTEGER," +
+                COLUMN_SCORE + " REAL," +
+                COLUMN_TIMESTAMP + " TEXT," +
+                "FOREIGN KEY(" + COLUMN_USER_ID_FK + ") REFERENCES " + USER_TABLE + "(" + COLUMN_USER_ID + "))";
+        db.execSQL(createPostureTable);
+    }
 
 
 }
