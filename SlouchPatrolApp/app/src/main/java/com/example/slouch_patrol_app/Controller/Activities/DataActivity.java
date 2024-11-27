@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TableLayout;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +30,9 @@ public class DataActivity extends AppCompatActivity {
     private List<String> activityList;
     private RecyclerView recyclerView;
     private ActivityLogAdapter activityLogAdapter;
+
+    private TextView usernameText;
+    private TextView averageScoreText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +61,12 @@ public class DataActivity extends AppCompatActivity {
 
         toolbar.getNavigationIcon().setTint(getResources().getColor(R.color.background_color, getTheme()));
         toolbar.setTitleTextColor(getResources().getColor(R.color.background_color, getTheme()));
+
+        averageScoreText = findViewById(R.id.log_user_avg);
+        usernameText = findViewById(R.id.log_user_text);
+
+        averageScoreText.setText("Your Last average was: 74");
+        usernameText.setText("Current user: " + username);
 
         //set recycler
         recyclerView = findViewById(R.id.listView);

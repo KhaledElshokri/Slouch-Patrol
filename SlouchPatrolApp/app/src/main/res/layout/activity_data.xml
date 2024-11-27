@@ -60,4 +60,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="128dp"
+        android:layout_height="88dp"
+        android:layout_marginStart="269dp"
+        android:layout_marginTop="74dp"
+        android:layout_marginEnd="14dp"
+        android:layout_marginBottom="569dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/happy_officer" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
