@@ -48,6 +48,7 @@ public class MainActivity
     private PostureCalculator postureCalculator;
 
     private int userID;
+    private String username;
 
     // SENSOR OBJECTS
     private SensorDataFetcher dataFetcher = new SensorDataFetcher();
@@ -63,6 +64,9 @@ public class MainActivity
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // Retrieve user credentials securely in the background thread
+        username = getCurrentUser();
 
         // Initialize Helper Classes
         databaseHelper = new DatabaseHelper(this);
@@ -270,9 +274,6 @@ public class MainActivity
     private void fetchSensorData() {
         new Thread(() -> {
             try {
-                // Retrieve user credentials securely in the background thread
-                String username = getCurrentUser();
-
                 // Fetch data and calculate score
                 String sensorData = dataFetcher.getSensorData();
                 int postureScore = postureCalculator.calculatePostureScore(sensorData);
